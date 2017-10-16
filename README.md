@@ -12,31 +12,44 @@ PyTorch从Torch发展而来，并经过了大量改进，由FaceBook AI团队主
 Caffe支持python接口，用户也可以根据需要重新配置编译，目前不支持多机分布式训练。
 ####单机
 单机示例：  
+```shell
 cd /home/ubuntu/caffe  
 ./build/tools/caffe train --solver=examples/mnist/lenet_solver.prototxt
+```
 ### TensorFlow 测试示例
 TensorFlow 版本号为1.1，支持单机和分布式训练。
 #### 单机：
+```shell
 cd /home/ubuntu/tensorflow  
 python mnist.py
+```
 #### 分布式：
 （修改对应的IP地址）  
 节点1：  
+```shell
 cd /home/ubuntu/tensorflow  
 python mnist_dist.py --ps_hosts=192.168.1.6:2221 --worker_hosts=192.168.1.6:2223,192.168.1.7:2223 --job_name=ps --task_index=0  
 python mnist_dist.py --ps_hosts=192.168.1.6:2221 --worker_hosts=192.168.1.6:2223,192.168.1.7:2223 --job_name=worker --task_index=0  
-节点2：  
+```
+节点2：
+```shell
 cd /home/ubuntu/tensorflow  
 python mnist_dist.py --ps_hosts=192.168.1.6:2221 --worker_hosts=192.168.1.6:2223,192.168.1.7:2223 --job_name=worker --task_index=1
-
+```
 ### PyTorch 测试示例
 #### 单机 
+```shell
 cd /home/ubuntu/pytorch  
 python mnist.py
+```
 #### 分布式
 节点1：  
+```shell
 cd /home/ubuntu/pytorch   
 python mnist_dist.py  
-节点2：  
+```
+节点2：
+```shell
 cd /home/ubuntu/pytorch   
 python mnist_dist.py
+```
