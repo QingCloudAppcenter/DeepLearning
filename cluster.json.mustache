@@ -6,7 +6,7 @@
         "container": {
             "type": "kvm",
             "zone": "pek3a",
-            "image": "img-zax7vhxf" 
+            "image": "img-p7ox2ang" 
         },        
         "count": {{cluster.dl_node.count}},
         "cpu": {{cluster.dl_node.cpu}},
@@ -18,5 +18,10 @@
             "size": {{cluster.dl_node.volume_size}}
         }
     }],
-    "advanced_actions": ["change_vxnet", "scale_horizontal"]
+    "advanced_actions": ["change_vxnet", "scale_horizontal"],
+    "env": {
+            "QingStor": {{env.QingStor}},
+            "access_key": {{env.access_key}},
+	    "secret_key": {{env.secret_key}}
+    }
 }

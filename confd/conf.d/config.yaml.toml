@@ -1,0 +1,4 @@
+[template]
+src = "config.yaml.tmpl"
+dest = "/home/ubuntu/.qingstor/config.yaml"
+keys = ["/",]

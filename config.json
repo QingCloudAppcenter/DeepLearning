@@ -28,7 +28,7 @@
         }, {
             "key": "dl_node",
             "label": "dl Node",
-            "description": "role-based node properties",
+            "description": "node properties",
             "type": "array",
             "properties": [{
                 "key": "cpu",
@@ -105,6 +105,39 @@
             }]
         }]
     
-    }]
+    },{
+                "key": "env",
+                "description": "Service properties",
+                "type": "array",
+                "properties": [
+		    {
+            		"key": "QingStor",
+			"label": "QingStor",
+			"description": "Whether to use QingStor or not",
+			"type": "boolean",
+			"default": false,
+		        "range": [true,false],
+		        "required":"no"
+		    },
+		    {
+			"key": "access_key",
+	                "label": "access key",
+            		"description": "QingStor access key",
+            		"type": "password",
+			"pattern": "[A-Z]{20}|^$",
+		        "default": "",
+		        "required":"no"
+	            },
+	            {
+            		"key": "secret_key",
+            		"label": "secret key",
+            		"description": "QingStor secret key",
+            		"type": "password",
+			"pattern": "[A-Za-z0-9]{40}|^$",
+            		"default": "",
+            		"required":"no"
+		    }
+		]
+	}]
 }
 
