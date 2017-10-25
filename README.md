@@ -8,7 +8,7 @@ TensorFlow由Google大脑主导开发，是一个分布式系统上的大规模�
 ### PyTorch
 PyTorch从Torch发展而来，并经过了大量改进，由FaceBook AI团队主导开发。不同于TensorFlow，PyTorch采用动态计算图的方式，并提供良好的python接口，代码简单灵活，使用起来非常方便。内存分配也经过了优化，能支持分布式多机训练。
 # 青云深度学习平台
-青云提供了NVIDIA Tesla P100 GPU主机，并搭建好了深度学习平台供用户使用。主机上配置了CUDA8.0和cudnn5，集成了原生的Caffe， TensorFlow(1.0)， PyTorch（0.2.0_3），省去了用户搭建环境的麻烦，提高开发效率。用户无需修改代码，即可把本地的代码运行在云上，还能动态扩展所需资源。
+青云提供了NVIDIA Tesla P100 GPU主机，并搭建好了深度学习平台供用户使用。主机上配置了CUDA8.0和cudnn5，集成了原生的Caffe， TensorFlow(1.2)， PyTorch（0.2.0_3），省去了用户搭建环境的麻烦，提高开发效率。用户无需修改代码，即可把本地的代码运行在云上，还能动态扩展所需资源。
 
 ## 部署 DeepLearning 服务
 
@@ -60,7 +60,7 @@ caffe 训练过程
 caffe 训练结果  
 ![caffe 训练结果](./images/DeepLearning/caffe_result.png)
 ### TensorFlow 测试示例
-TensorFlow 版本号为1.0，支持单机和分布式训练。  
+TensorFlow 版本号为1.2，支持单机和分布式训练。  
 #### 单机：
 ```shell
 cd /home/ubuntu/tensorflow  
