@@ -17,7 +17,7 @@ def main(_):
 
     # Create and start a server for the local task.
     config = tf.ConfigProto()
-    #config.gpu_options.per_process_gpu_memory_fraction = 0.2
+    config.gpu_options.per_process_gpu_memory_fraction = 0.2
 
     server = tf.train.Server(cluster,
                              job_name=FLAGS.job_name,
@@ -34,7 +34,7 @@ def main(_):
                 cluster=cluster)):
 
             # Build model ...
-            mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)
+            mnist = input_data.read_data_sets("data/", one_hot=True)
 
             # Create the model
             x = tf.placeholder(tf.float32, [None, 784])
@@ -80,7 +80,7 @@ def main(_):
 
         # Loop until the supervisor shuts down (or 2000 steps have completed).
         step = 0
-        while not sv.should_stop() and step < 20000:
+        while step < 20000:
             batch_xs, batch_ys = mnist.train.next_batch(100)
             _, step = sess.run([train_op, global_step], feed_dict={x: batch_xs, y_: batch_ys})
             print("Step %d in task %d" % (step, FLAGS.task_index))

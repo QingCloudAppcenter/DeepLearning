@@ -34,7 +34,7 @@ args.cuda = not args.no_cuda and torch.cuda.is_available()
 torch.manual_seed(args.seed)
 if args.cuda:
     torch.cuda.manual_seed(args.seed)
-dist.init_process_group(backend='gloo', init_method='tcp://192.168.1.4:7777',rank = 0, world_size=2)
+dist.init_process_group(backend='gloo', init_method='tcp://224.66.41.62:23456',rank = 0, world_size=2)
 
 
 train_datasets= datasets.MNIST('../data', train=True, download=True,transform=transforms.Compose([transforms.ToTensor(),transforms.Normalize((0.1307,), (0.3081,))]))
@@ -70,10 +70,10 @@ class Net(nn.Module):
         return F.log_softmax(x)
 
 model = Net()
-#model = torch.nn.parallel.DistributedDataParallel(model)
+
 if args.cuda:
     model.cuda()
-
+model = torch.nn.parallel.DistributedDataParallel(model)
 optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=args.momentum)
 
 def train(epoch):
@@ -113,5 +113,5 @@ def test():
 
 for epoch in range(1, args.epochs + 1):
     train(epoch)
-#test()
+test()
 
