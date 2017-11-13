@@ -16,7 +16,7 @@
             "label": "Description",
             "description": "The description of the deep learning service",
             "type": "string",
-            "default": "deep learning service with caffe, tensorflow, pytorch",
+            "default": "deep learning service with caffe，tensorflow，pytorch，keras",
             "required": "no"
         }, {
             "key": "vxnet",
@@ -40,16 +40,34 @@
                     1,
                     2,
                     4,
-                    8
+                    8,
+		    12,
+		    16
                 ],
                 "required": "yes"
-            }, {
+            },  {
+                "key": "instance_class",
+                "label": "Instance Class",
+                "description": "The instance type for dl to run，such as high performance，high performance plus",
+                "type": "integer",
+                "default": 1,
+                "range": [0, 1],
+                "required": "yes"
+            },{
                 "key": "gpu",
                 "label": "GPU",
                 "description": "GPUs of each node",
                 "type": "integer",
                 "default": 1,
                 "range": [0, 1, 2],
+                "required": "yes"
+            },{
+                "key": "gpu_class",
+                "label": "GPU Class",
+                "description": "The gpu type for the cluster to run，such as high performance",
+                "type": "integer",
+                "default": 0,
+                "range": [0],
                 "required": "yes"
             },{
                 "key": "memory",
@@ -61,18 +79,16 @@
                     1024,
                     2048,
                     4096,
+		    6144,
                     8192,
+		    12288,
                     16384,
-                    32768
+		    24576,
+                    32768,
+		    40960,
+		    49152,
+		    65536
                 ],
-                "required": "yes"
-            }, {
-                "key": "instance_class",
-                "label": "Instance Class",
-                "description": "The instance type for dl to run，such as high performance，high performance plus",
-                "type": "integer",
-                "default": 1,
-                "range": [0, 1],
                 "required": "yes"
             }, {
                 "key": "count",
@@ -85,19 +101,11 @@
                 ],
                 "required": "yes"
             }, {
-                "key": "gpu_class",
-                "label": "GPU Class",
-                "description": "The gpu type for the cluster to run，such as high performance",
-                "type": "integer",
-                "default": 0,
-                "range": [0],
-                "required": "yes"
-            },{
                 "key": "volume_size",
                 "label": "Volume Size",
                 "description": "The volume size for each node",
                 "type": "integer",
-                "default": 100,
+                "default": 10,
 		"min":10,
 		"max": 1000,
 		"step":10,

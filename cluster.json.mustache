@@ -6,7 +6,7 @@
         "container": {
             "type": "kvm",
             "zone": "pek3a",
-            "image": "img-p7ox2ang" 
+            "image": "img-2tkht77o" 
         },        
         "count": {{cluster.dl_node.count}},
         "cpu": {{cluster.dl_node.cpu}},
@@ -14,6 +14,7 @@
         "memory": {{cluster.dl_node.memory}},
 	"instance_class": {{cluster.dl_node.instance_class}},
 	"gpu_class": {{cluster.dl_node.gpu_class}},
+	"user_access": true,
         "volume": {
             "size": {{cluster.dl_node.volume_size}}
         }

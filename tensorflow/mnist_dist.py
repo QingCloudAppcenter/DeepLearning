@@ -88,7 +88,7 @@ def main(_):
         if FLAGS.task_index != 0:
             print("accuracy: %f" % sess.run(accuracy, feed_dict={x: mnist.test.images,
                                                              y_: mnist.test.labels}))
-
+        sv.stop()
 
 if __name__ == "__main__":
     tf.app.run()
