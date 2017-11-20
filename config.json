@@ -2,21 +2,21 @@
     "type": "array",
     "properties": [{
         "key": "cluster",
-        "description": "deep learning cluster properties",
+        "description": "Deep learning cluster properties",
         "type": "array",
         "properties": [{
             "key": "name",
             "label": "Name",
             "description": "The name of the deep learning service",
             "type": "string",
-            "default": "DeepLearning",
+            "default": "Deep Learning",
             "required": "no"
         }, {
             "key": "description",
             "label": "Description",
             "description": "The description of the deep learning service",
             "type": "string",
-            "default": "deep learning service with caffe，tensorflow，pytorch，keras",
+            "default": "Deep learning service with Caffe，Tensorflow，Pytorch，Keras",
             "required": "no"
         }, {
             "key": "vxnet",
