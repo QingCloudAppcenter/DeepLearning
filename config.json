@@ -120,7 +120,7 @@
                 "properties": [
 		    {
             		"key": "QingStor",
-			"label": "QingStor",
+			"label": "QingStor对象存储",
 			"description": "Whether to use QingStor or not",
 			"type": "boolean",
 			"default": false,

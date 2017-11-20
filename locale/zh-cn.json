@@ -24,5 +24,5 @@
 	"The volume size for each node":"每个节点存储空间大小",
 	"Service properties": "服务属性",
 	"QingStor": "QingStor",
-	"Whether to use QingStor or not": "是否使用QingStor"
+	"Whether to use QingStor or not": "是否使用QingStor对象存储"
 }
