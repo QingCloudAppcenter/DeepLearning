@@ -1,0 +1,169 @@
+{
+    "type":"array",
+    "properties":[
+        {
+            "key":"cluster",
+            "description":"Deep learning cluster properties",
+            "type":"array",
+            "properties":[
+                {
+                    "key":"name",
+                    "label":"Name",
+                    "description":"The name of the deep learning service",
+                    "type":"string",
+                    "default":"Deep Learning",
+                    "required":"no"
+                },
+                {
+                    "key":"description",
+                    "label":"Description",
+                    "description":"The description of the deep learning service",
+                    "type":"string",
+                    "default":"Deep learning service with Caffe，Tensorflow，Pytorch，Keras",
+                    "required":"no"
+                },
+                {
+                    "key":"vxnet",
+                    "label":"VxNet",
+                    "description":"Choose a vxnet to join",
+                    "type":"string",
+                    "default":"",
+                    "required":"yes"
+                },
+                {
+                    "key":"dl_node",
+                    "label":"dl Node",
+                    "description":"node properties",
+                    "type":"array",
+                    "properties":[
+                        {
+                            "key":"cpu",
+                            "label":"CPU",
+                            "description":"CPUs of each node",
+                            "type":"integer",
+                            "default":8,
+                            "range":[
+                                4,
+                                8,
+                                12,
+                                16
+                            ],
+                            "required":"yes"
+                        },
+                        {
+                            "key":"instance_class",
+                            "label":"Instance Class",
+                            "description":"The instance type for dl to run，such as high performance，high performance plus",
+                            "type":"integer",
+                            "default":1,
+                            "range":[
+                                0,
+                                1
+                            ],
+                            "required":"yes"
+                        },
+                        {
+                            "key":"gpu",
+                            "label":"GPU",
+                            "description":"GPUs of each node",
+                            "type":"integer",
+                            "default":1,
+                            "range":[
+                                0,
+                                1,
+                                2
+                            ],
+                            "required":"yes"
+                        },
+                        {
+                            "key":"gpu_class",
+                            "label":"GPU Class",
+                            "description":"The gpu type for the cluster to run，such as high performance",
+                            "type":"integer",
+                            "default":0,
+                            "range":[
+                                0
+                            ],
+                            "required":"yes"
+                        },
+                        {
+                            "key":"memory",
+                            "label":"Memory",
+                            "description":"memory of each node (in MiB)",
+                            "type":"integer",
+                            "default":32768,
+                            "range":[
+                                32768,
+                                49152,
+                                65536
+                            ],
+                            "required":"yes"
+                        },
+                        {
+                            "key":"count",
+                            "label":"Node Count",
+                            "description":"Number of nodes for dl to create",
+                            "type":"integer",
+                            "default":1,
+                            "range":[
+                                1,
+                                2,
+                                3,
+                                4
+                            ],
+                            "required":"yes"
+                        },
+                        {
+                            "key":"volume_size",
+                            "label":"Volume Size",
+                            "description":"The volume size for each node",
+                            "type":"integer",
+                            "default":10,
+                            "min":10,
+                            "max":1000,
+                            "step":10,
+                            "required":"yes"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "key":"env",
+            "description":"Service properties",
+            "type":"array",
+            "properties":[
+                {
+                    "key":"QingStor",
+                    "label":"QingStor对象存储",
+                    "description":"Whether to use QingStor or not",
+                    "type":"boolean",
+                    "default":false,
+                    "range":[
+                        true,
+                        false
+                    ],
+                    "required":"no"
+                },
+                {
+                    "key":"access_key",
+                    "label":"access key",
+                    "description":"QingStor access key",
+                    "type":"password",
+                    "pattern":"[A-Z]{20}|^$",
+                    "default":"",
+                    "required":"no"
+                },
+                {
+                    "key":"secret_key",
+                    "label":"secret key",
+                    "description":"QingStor secret key",
+                    "type":"password",
+                    "pattern":"[A-Za-z0-9]{40}|^$",
+                    "default":"",
+                    "required":"no"
+                }
+            ]
+        }
+    ]
+}
