@@ -59,30 +59,7 @@
                                 0,
                                 1
                             ],
-                            "required":"yes"
-                        },
-                        {
-                            "key":"gpu",
-                            "label":"GPU",
-                            "description":"GPUs of each node",
-                            "type":"integer",
-                            "default":1,
-                            "range":[
-                                0,
-                                1
-                            ],
-                            "required":"yes"
-                        },
-                        {
-                            "key":"gpu_class",
-                            "label":"GPU Class",
-                            "description":"The gpu type for the cluster to run，such as high performance",
-                            "type":"integer",
-                            "default":0,
-                            "range":[
-                                0
-                            ],
-                            "required":"yes"
+                            "required":"no"
                         },
                         {
                             "key":"memory",

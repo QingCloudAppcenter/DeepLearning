@@ -35,7 +35,7 @@ CUDA 9.1 | 1.7.0 | BVLC  | 0.4.0 | 2.1.5
 CUDA 8.0 | 1.6.0 | BVLC  | 0.3.1 | 2.1.5
 CPU      | 1.7.0 | Intel | 0.3.1 | 2.1.5
 
-> <font color=red>目前仅 pek3a , pek3b , sh1a 支持 GPU，如需在其他区创建请选择CPU版并将 GPU 数量设置为 0。TensorFlow，PyTorch ， Keras 和 Caffe 均支持用 CPU 进行深度学习应用的训练和测试。</font>
+> <font color=red>目前仅 pek3a , pek3b , sh1a 支持 GPU，如需在其他区创建请选择CPU版。TensorFlow，PyTorch ， Keras 和 Caffe 均支持用 CPU 进行深度学习应用的训练和测试。</font>
 
 本说明文档仅对应青云深度学习平台1.1版本，1.0版本说明文档请参考[青云深度学习平台1.0](./1.0)。
 
