@@ -1,0 +1,28 @@
+{
+    "name": {{cluster.name}},
+    "description": {{cluster.description}},
+    "vxnet": {{cluster.vxnet}},
+    "nodes": [{
+        "container": {
+            "type": "kvm",
+            "zone": "pek3b",
+            "image": "img-6q9jccrv"
+        },
+        "count": {{cluster.dl_node.count}},
+        "cpu": {{cluster.dl_node.cpu}},
+    	"gpu": {{cluster.dl_node.gpu}},
+        "memory": {{cluster.dl_node.memory}},
+    	"instance_class": {{cluster.dl_node.instance_class}},
+    	"gpu_class": {{cluster.dl_node.gpu_class}},
+    	"user_access": true,
+        "volume": {
+            "size": {{cluster.dl_node.volume_size}}
+        }
+    }],
+    "advanced_actions": ["change_vxnet", "scale_horizontal"],
+    "env": {
+            "QingStor": {{env.QingStor}},
+            "access_key": {{env.access_key}},
+	        "secret_key": {{env.secret_key}}
+    }
+}
