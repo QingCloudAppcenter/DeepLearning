@@ -41,11 +41,13 @@
                             "label":"CPU",
                             "description":"CPUs of each node",
                             "type":"integer",
-                            "default":1,
+                            "default":2,
                             "range":[
-                                1,
                                 2,
-                                4
+                                4,
+                                8,
+                                12,
+                                16
                             ],
                             "required":"yes"
                         },
@@ -59,20 +61,23 @@
                                 0,
                                 1
                             ],
-                            "required":"no"
+                            "required":"yes"
                         },
                         {
                             "key":"memory",
                             "label":"Memory",
                             "description":"memory of each node (in MiB)",
                             "type":"integer",
-                            "default":2048,
+                            "default":4096,
                             "range":[
-                                2048,
                                 4096,
                                 8192,
                                 12288,
-                                16384
+                                16384,
+                                24576,
+                                32768,
+                                49152,
+                                65536
                             ],
                             "required":"yes"
                         },

@@ -320,6 +320,7 @@ ifeq ($(DEBUG), 1)
 	NVCCFLAGS += -G
 else
 	COMMON_FLAGS += -DNDEBUG -O2 -std=c++11
+	NVCCFLAGS += -G
 endif
 
 # cuDNN acceleration configuration.
@@ -641,7 +642,7 @@ $(PROTO_BUILD_DIR)/%.pb.cc $(PROTO_BUILD_DIR)/%.pb.h : \
 $(PY_PROTO_BUILD_DIR)/%_pb2.py : $(PROTO_SRC_DIR)/%.proto \
 		$(PY_PROTO_INIT) | $(PY_PROTO_BUILD_DIR)
 	@ echo PROTOC \(python\) $<
-	$(Q)protoc --proto_path=$(PROTO_SRC_DIR) --python_out=$(PY_PROTO_BUILD_DIR) $<
+	$(Q)protoc --proto_path=src --python_out=python $<
 
 $(PY_PROTO_INIT): | $(PY_PROTO_BUILD_DIR)
 	touch $(PY_PROTO_INIT)
