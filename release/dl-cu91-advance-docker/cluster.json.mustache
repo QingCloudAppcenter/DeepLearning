@@ -1,0 +1,123 @@
+{
+    "name": {{cluster.name}},
+    "description": {{cluster.description}},
+    "vxnet": {{cluster.vxnet}},
+    "nodes": [{
+        "container": {
+            "type": "kvm",
+            "zone": "pek3",
+            "image": "img-2p2w0onv"
+        },
+        "count": {{cluster.dl_node.count}},
+        "cpu": {{cluster.dl_node.cpu}},
+        "gpu": {{cluster.dl_node.gpu}},
+        "memory": {{cluster.dl_node.memory}},
+        "instance_class": {{cluster.dl_node.instance_class}},
+        "gpu_class": {{cluster.dl_node.gpu_class}},
+        "user_access": true,
+        "volume": {
+            "size": {{cluster.dl_node.volume_size}}
+        },
+        "services": {
+            "init": {
+                "post_start_service": true,
+                "cmd": "chown ubuntu /data && chown -R ubuntu /home/ubuntu/.qingstor",
+                "timeout": 3600
+            }
+        },
+        "monitor": {
+            "enable": true,
+            "cmd": "/usr/bin/python /opt/dl/gpu-monitor.py",
+            "items": {
+                "GPUUtil_1": {
+                    "unit": "%",
+                    "value_type": "int",
+                    "statistics_type": "latest"
+                },
+                "MemoryUtil_1": {
+                    "unit": "%",
+                    "value_type": "int",
+                    "statistics_type": "latest"
+                },
+                "PowerUsage_1": {
+                    "unit": "W",
+                    "value_type": "int",
+                    "statistics_type": "latest"
+                },
+                "Temperature_1": {
+                    "unit": "℃",
+                    "value_type": "int",
+                    "statistics_type": "latest"
+                },
+                "Temperature_1": {
+                    "unit": "℃",
+                    "value_type": "int",
+                    "statistics_type": "latest"
+                },
+                "MemoryTotal_1": {
+                    "unit": "MB",
+                    "value_type": "int",
+                    "statistics_type": "latest"
+                },
+                "MemoryUsed_1": {
+                    "unit": "MB",
+                    "value_type": "int",
+                    "statistics_type": "latest"
+                },
+                "MemoryFree_1": {
+                    "unit": "MB",
+                    "value_type": "int",
+                    "statistics_type": "latest"
+                },
+                "GPUUtil_2": {
+                    "unit": "%",
+                    "value_type": "int",
+                    "statistics_type": "latest"
+                },
+                "MemoryUtil_2": {
+                    "unit": "%",
+                    "value_type": "int",
+                    "statistics_type": "latest"
+                },
+                "PowerUsage_2": {
+                    "unit": "W",
+                    "value_type": "int",
+                    "statistics_type": "latest"
+                },
+                "Temperature_2": {
+                    "unit": "℃",
+                    "value_type": "int",
+                    "statistics_type": "latest"
+                },
+                "MemoryTotal_2": {
+                    "unit": "MB",
+                    "value_type": "int",
+                    "statistics_type": "latest"
+                },
+                "MemoryUsed_2": {
+                    "unit": "MB",
+                    "value_type": "int",
+                    "statistics_type": "latest"
+                },
+                "MemoryFree_2": {
+                    "unit": "MB",
+                    "value_type": "int",
+                    "statistics_type": "latest"
+                }
+            },
+             "groups": {
+                "GPU-1 utilization": ["GPUUtil_1", "MemoryUtil_1"],
+                "GPU-1 memory utilization": ["MemoryTotal_1", "MemoryUsed_1"],
+                "GPU-2 utilization": ["GPUUtil_2", "MemoryUtil_2"],
+                "GPU-2 memory utilization": ["MemoryTotal_2", "MemoryUsed_2"]
+            },
+            "display": ["GPU-1 utilization", "GPU-1 memory utilization", "GPU-2 utilization", "GPU-2 memory utilization"]
+        }
+    }],
+    "advanced_actions": ["change_vxnet", "scale_horizontal"],
+    "env": {
+            "QingStor": {{env.QingStor}},
+            "access_key": {{env.access_key}},
+            "secret_key": {{env.secret_key}}
+    }
+}

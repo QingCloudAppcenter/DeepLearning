@@ -1,0 +1,121 @@
+FROM  ubuntu:16.04
+LABEL maintainer "carman <carmanzhang@yunify.com>"
+
+#RUN mkdir /root/.pip
+#COPY pip.conf /root/.pip/
+
+RUN     apt-get update && \
+        apt-get install -y --no-install-recommends \
+        build-essential \
+        ca-certificates \
+        cmake \
+        wget \
+        git \
+        vim \
+        curl \
+        apt-utils \
+        rsync \
+        zlib1g-dev \
+        libhdf5-serial-dev \
+        libpng12-0  \
+        libpng12-dev \
+        libzmq3-dev \
+        libfreetype6  \
+        libfreetype6-dev \
+        pkg-config \
+        python \
+        python-dev \
+        unzip \
+        libboost-all-dev \
+        libatlas-base-dev \
+        libgflags-dev \
+        libgoogle-glog-dev \
+        libleveldb-dev \
+        liblmdb-dev \
+        libprotobuf-dev \
+        libsnappy-dev \
+        protobuf-compiler \
+        && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN curl -O https://bootstrap.pypa.io/get-pip.py && \
+    python get-pip.py && \
+    rm get-pip.py
+
+RUN pip --no-cache-dir install \
+        Pillow \
+        h5py \
+        ipykernel \
+        jupyter \
+        matplotlib \
+        numpy==1.14.5 \
+        pandas \
+        scipy \
+        sklearn \
+        ipython==5.7.0 \
+	keras \
+        Cython \
+        && \
+    python -m ipykernel.kernelspec
+
+RUN git clone --depth 10 --branch 3.4.1 https://github.com/opencv/opencv ~/opencv && \
+    mkdir -p ~/opencv/build && cd ~/opencv/build && \
+    cmake -D CMAKE_BUILD_TYPE=RELEASE \
+          -D CMAKE_INSTALL_PREFIX=/usr/local \
+          -D WITH_IPP=OFF \
+          -D WITH_CUDA=OFF \
+          -D WITH_OPENCL=OFF \
+          -D BUILD_TESTS=OFF \
+          -D BUILD_PERF_TESTS=OFF \
+          .. && \
+    make -j"$(nproc)" install 
+
+RUN git clone --depth 10 https://github.com/BVLC/caffe ~/caffe && \
+    cp ~/caffe/Makefile.config.example ~/caffe/Makefile.config && \
+    sed -i 's/# CPU_ONLY/CPU_ONLY/g' ~/caffe/Makefile.config && \
+    sed -i 's/# WITH_PYTHON_LAYER/WITH_PYTHON_LAYER/g' ~/caffe/Makefile.config && \
+    sed -i 's/# OPENCV_VERSION/OPENCV_VERSION/g' ~/caffe/Makefile.config && \
+    sed -i 's/\/usr\/lib\/python/\/usr\/local\/lib\/python/g' ~/caffe/Makefile.config && \
+    sed -i 's/\/usr\/local\/include/\/usr\/local\/include \/usr\/include\/hdf5\/serial/g' ~/caffe/Makefile.config && \
+    sed -i 's/hdf5/hdf5_serial/g' ~/caffe/Makefile && \
+    cd ~/caffe && \
+    make -j"$(nproc)" -Wno-deprecated-gpu-targets distribute && \
+    # fix ValueError caused by python-dateutil 1.x
+    sed -i 's/,<2//g' ~/caffe/python/requirements.txt && \
+    # for  python3 remove below line
+    sed -i 's/ipython>=3.0.0/ipython>=3.0.0,<6/g' ~/caffe/python/requirements.txt  && \
+    pip install   -r ~/caffe/python/requirements.txt && \
+    cd ~/caffe/distribute/bin && \
+    for file in *.bin; do mv "$file" "${file%%.bin}"; done && \
+    cd ~/caffe/distribute && \
+    cp -r bin include lib proto /usr/local/ && \
+    cp -r python/caffe /usr/local/lib/python2.7/dist-packages/ && \
+    ldconfig && \
+    apt-get clean && \
+    apt-get autoremove && \
+    rm -rf /var/lib/apt/lists/* /tmp/*  /etc/apt/sources.list.d/*
+
+
+# Install TensorFlow GPU version.
+RUN pip --no-cache-dir install \
+	https://appcenter-deeplearning.sh1a.qingstor.com/tensorflow/1.8.0/cpu/tensorflow-1.8.0-cp27-cp27mu-linux_x86_64.whl
+
+RUN  pip --no-cache-dir install \
+	torch \
+	torchvision
+
+#===================================================================================
+RUN jupyter notebook --generate-config && \
+        echo "c.NotebookApp.ip = '*'" >> /root/.jupyter/jupyter_notebook_config.py && \
+        echo "c.NotebookApp.open_browser = False" >> /root/.jupyter/jupyter_notebook_config.py
+RUN apt-get update && apt-get install -y --no-install-recommends  dialog
+#===================================================================================
+
+ENV LD_LIBRARY_PATH /usr/local/cuda/extras/CUPTI/lib64:$LD_LIBRARY_PATH
+
+EXPOSE 6006
+EXPOSE 8888
+
+WORKDIR "/root/"
+
