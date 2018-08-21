@@ -1,0 +1,111 @@
+FROM  ubuntu:16.04
+LABEL maintainer "carman <carmanzhang@yunify.com>"
+
+#RUN mkdir /root/.pip
+#COPY pip.conf /root/.pip/
+
+RUN     apt-get update && \
+        apt-get install -y --no-install-recommends \
+        build-essential \
+        ca-certificates \
+        cmake \
+        wget \
+        git \
+        vim \
+        curl \
+        apt-utils \
+        rsync \
+        zlib1g-dev \
+        libhdf5-serial-dev \
+        libpng12-0  \
+        libpng12-dev \
+        libzmq3-dev \
+        libfreetype6  \
+        libfreetype6-dev \
+        pkg-config \
+        python \
+        python-dev \
+        unzip \
+        libboost-all-dev \
+        libatlas-base-dev \
+        libgflags-dev \
+        libgoogle-glog-dev \
+        libleveldb-dev \
+        liblmdb-dev \
+        libprotobuf-dev \
+        libsnappy-dev \
+        protobuf-compiler \
+        && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN curl -O https://bootstrap.pypa.io/get-pip.py && \
+    python get-pip.py && \
+    rm get-pip.py
+
+RUN pip --no-cache-dir install \
+        Pillow \
+        h5py \
+        ipykernel \
+        jupyter \
+        matplotlib \
+        numpy==1.14.5 \
+        pandas \
+        scipy \
+        sklearn \
+        ipython==5.7.0 \
+        keras \
+        Cython \
+        python-dateutil==2.7.3 \
+        && \
+        python -m ipykernel.kernelspec
+
+RUN jupyter notebook --generate-config && \
+        echo "c.NotebookApp.ip = '*'" >> /root/.jupyter/jupyter_notebook_config.py && \
+        echo "c.NotebookApp.open_browser = False" >> /root/.jupyter/jupyter_notebook_config.py
+
+RUN  pip --no-cache-dir install \
+	https://appcenter-deeplearning.sh1a.qingstor.com/tensorflow/1.8.0/avx2/tensorflow-1.8.0-cp27-cp27mu-linux_x86_64.whl \
+        torch \
+        torchvision
+
+RUN  apt-get update && apt-get install -y --no-install-recommends \
+        cpio \
+        numactl \
+        iputils-ping \
+        screen \
+        libmlx4-1 libmlx5-1 ibutils  rdmacm-utils libibverbs1 ibverbs-utils perftest infiniband-diags \
+        openmpi-bin libopenmpi-dev \
+        ufw \
+        iptables \
+        libhdf5-serial-dev \
+        libopencv-dev \
+        python-setuptools
+
+RUN  mkdir -p /root/.config/matplotlib && echo "backend: Agg" > /root/.config/matplotlib/matplotlibrc
+
+RUN git clone --depth 10 https://github.com/QingCloudAppcenter/DeepLearning.git && \
+    cp -r DeepLearning/caffe/cpu/caffe-py2 /opt/caffe-py2 && \
+    mv /opt/caffe-py2 /opt/caffe && \
+    rm -rf ~/DeepLearning && \
+    cd /opt/caffe && \
+    find . -name '*.sh' | xargs chmod 775
+
+ENV CAFFE_ROOT=/opt/caffe
+WORKDIR $CAFFE_ROOT
+
+RUN for req in $(cat python/requirements.txt) pydot; do pip install $req; done && \
+    mkdir build && cd build && \
+    cmake -DCPU_ONLY=1 -DBLAS=mkl -DUSE_MLSL=1 -DCMAKE_BUILD_TYPE=Release .. && \
+    make all -j"$(nproc)"
+
+ENV PYCAFFE_ROOT $CAFFE_ROOT/python
+ENV PYTHONPATH $PYCAFFE_ROOT:$PYTHONPATH
+ENV PATH $CAFFE_ROOT/build/tools:$PYCAFFE_ROOT:$PATH
+RUN echo "$CAFFE_ROOT/build/lib" >> /etc/ld.so.conf.d/caffe.conf && ldconfig
+
+EXPOSE 6006
+EXPOSE 8888
+
+WORKDIR "/root/"
+
