@@ -54,7 +54,7 @@ RUN pip --no-cache-dir install \
         scipy \
         sklearn \
         ipython==5.7.0 \
-	keras \
+        keras \
         Cython \
         && \
     python -m ipykernel.kernelspec
@@ -99,20 +99,17 @@ RUN git clone --depth 10 https://github.com/BVLC/caffe ~/caffe && \
 
 # Install TensorFlow GPU version.
 RUN pip --no-cache-dir install \
-	https://appcenter-deeplearning.sh1a.qingstor.com/tensorflow/1.8.0/cpu/tensorflow-1.8.0-cp27-cp27mu-linux_x86_64.whl
+    https://appcenter-deeplearning.sh1a.qingstor.com/tensorflow/1.8.0/cpu/tensorflow-1.8.0-cp27-cp27mu-linux_x86_64.whl
+    torch \
+    torchvision
 
-RUN  pip --no-cache-dir install \
-	torch \
-	torchvision
-
-#===================================================================================
 RUN jupyter notebook --generate-config && \
         echo "c.NotebookApp.ip = '*'" >> /root/.jupyter/jupyter_notebook_config.py && \
         echo "c.NotebookApp.open_browser = False" >> /root/.jupyter/jupyter_notebook_config.py
-RUN apt-get update && apt-get install -y --no-install-recommends  dialog
-#===================================================================================
 
-ENV LD_LIBRARY_PATH /usr/local/cuda/extras/CUPTI/lib64:$LD_LIBRARY_PATH
+RUN  apt-get update && apt-get install -y --no-install-recommends net-tools dialog python-tk
+
+RUN  mkdir -p /root/.config/matplotlib && echo "backend: Agg" > /root/.config/matplotlib/matplotlibrc
 
 EXPOSE 6006
 EXPOSE 8888

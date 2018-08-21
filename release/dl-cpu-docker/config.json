@@ -37,6 +37,22 @@
                     "type":"array",
                     "properties":[
                         {
+                            "key": "cpu_model",
+                            "label": "CPU类型",
+                            "description": "CPU体系架构",
+                            "type": "string",
+                            "default": "Westmere",
+                            "range": [
+                               "",
+                               "Westmere",
+                               "SandyBridge",
+                               "IvyBridge",
+                               "Haswell",
+                               "Broadwell"
+                            ],
+                            "required": "no"
+                        },
+                        {
                             "key":"cpu",
                             "label":"CPU",
                             "description":"CPUs of each node",

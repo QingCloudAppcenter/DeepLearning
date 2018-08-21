@@ -55,22 +55,27 @@ pip install tensorflow-1.9.0-cp27-cp27mu-linux_x86_64.whl
 pip list
 ```
 
-
 ## 青云深度学习平台(容器版)
 深度学习平台（容器版）基于Docker容器技术，将主流的深度学习框架做成docker镜像的形式，用户无需为环境进行繁琐的配置，直接运行容器化的深度学习应用，即可迅速开展训练和预测任务，提高了用户的开发和部署效率。
-青云深度学习平台（容器版）提供GPU和CPU两个容器版本，其中GPU版本分为GPU高级版和GPU基础版，均搭载NVIDIA Tesla P100 GPU，GPU高级版和GPU基础版的区别在于CPU核数、内存的可配置范围以及是否支持包年包月。GPU容器版在docker宿主机中安装NVIDIA Driver(387.26)，nvidia-docker2，Docker(18.03.1-ce)，CPU容器版在docker宿主机上安装Docker(18.03.1-ce)，容器版在宿主机上预置了一个docker镜像，镜像中均安装Caffe(1.0)，TensorFlow(1.8.0)，Keras(2.2.0)，PyTorch(0.4.1)框架。
+青云深度学习平台（容器版）提供GPU和CPU两个容器版本，其中GPU版本分为GPU高级版和GPU基础版，均搭载NVIDIA Tesla P100 GPU，GPU高级版和GPU基础版的区别在于CPU核数、内存的可配置范围以及是否支持包年包月。GPU容器版在docker宿主机中安装NVIDIA Driver(387.26)，nvidia-docker2，Docker(18.03.1-ce)，CPU容器版在docker宿主机上安装Docker(18.03.1-ce)，容器版在宿主机上预置了一个或多个docker镜像，镜像中均安装Caffe(1.0)，TensorFlow(1.8.0)，Keras(2.2.0)，PyTorch(0.4.1)框架。
 
-- CPU 版本的镜像
+- 容器版的内置镜像
 
-![cpu版本的DL镜像](./images/DeepLearning/default-images-cpu.png)
+|容器版类别	|Python版本	|CUDA版本	|内置镜像	|描述  |
+| :-------- | :--------:| :--: | :--|:--|
+|GPU 容器高级版|2.7|9.1|qingcloud/deeplearning:1.0-py27-cu91-cudnn7.1|GPU 训练，CUDA 和 cuDNN 加速|
+|GPU 容器基础版|2.7|9.1|qingcloud/deeplearning:1.0-py27-cu91-cudnn7.1|GPU 训练，CUDA 和 cuDNN 加速|
+|CPU 优化容器版|2.7|-|qingcloud/deeplearning:1.0-py27-cpu|Intel CPU 无优化训练|
+|CPU 优化容器版|2.7|-|qingcloud/deeplearning:1.0-py27-cpu-avx|Intel CPU 优化，AVX指令集加速|
+|CPU 优化容器版|2.7|-|qingcloud/deeplearning:1.0-py27-cpu-avx2-mkldnn|Intel CPU 优化，AVX 指令集和 MKLDNN库加速|
 
-- GPU 版本的镜像
+> <span style="color:red"> CPU 优化容器版内置3个镜像，其中有两个为 Intel CPU 优化镜像(1.0-py27-cpu-avx 和 1.0-py27-cpu-avx2-mkldnn)，只有CPU架构为 SandyBridge, IvyBridge, Haswell, Broadwell 才可以使用优化版镜像，CPU 容器版镜像与 CPU 微架构的适配情况见[CPU容器版镜像与CPU微架构适配表](https://docs.qingcloud.com/product/ai/deeplearning/#CPU%E5%AE%B9%E5%99%A8%E7%89%88%E9%95%9C%E5%83%8F%E4%B8%8ECPU%E5%BE%AE%E6%9E%B6%E6%9E%84%E9%80%82%E9%85%8D%E8%A1%A8)</span>
 
-![gpu版本的DL镜像](./images/DeepLearning/default-images-gpu.png)
+为满足用户对不同Deep Learning框架版本、Python版本和CUDA版本的需求，青云深度学习平台（容器版）提供了匹配不同版本的多个[docker image](https://hub.docker.com/u/qingcloud/)，用户可依据需要拉取，多个版本的docker image以及获取命令见[image获取命令](https://docs.qingcloud.com/product/ai/deeplearning/#docker%E9%95%9C%E5%83%8F%E8%8E%B7%E5%8F%96%E5%91%BD%E4%BB%A4)
 
-- 为满足用户对不同Deep Learning框架版本、python版本和CUDA版本的需求，青云深度学习平台（容器版）提供了匹配不同版本的多个[docker image](https://hub.docker.com/u/qingcloud/)，用户可依据需要拉取，多个版本的docker image以及获取命令见[image获取命令](https://docs.qingcloud.com/product/ai/deeplearning/#docker%E9%95%9C%E5%83%8F%E8%8E%B7%E5%8F%96%E5%91%BD%E4%BB%A4),各框架的Repository地址如下：
+- 各深度学习框架的Repository地址
 
-|App	|Repository地址	|
+|深度学习框架	|Repository地址	|
 | :-------- | :--|
 |TensorFlow|https://hub.docker.com/r/qingcloud/tensorflow/|
 |Keras|https://hub.docker.com/r/qingcloud/keras/|
@@ -102,9 +107,15 @@ pip list
 
 ### 第5步：计算节点设置
 
-![第5步：节点设置](./images/DeepLearning/node_config.png)
+- 若选择 GPU 版本，填写节点 CPU cores、 GPU 个数、内存大小、节点类型、节点个数、数据盘大小等配置信息。
 
-- 填写节点 CPU、GPU、内存、节点类型、节点个数、数据盘大小等配置信息。
+![第5步：GPU节点设置](./images/DeepLearning/node_config.png)
+
+- 若选择 CPU 版本，填写 CPU 微架构类型、节点 CPU cores、内存大小、节点类型、节点个数、数据盘大小等配置信息。
+
+![第5步：CPU节点设置](./images/DeepLearning/cpu_type.png)
+
+> <span style="color:red"> 建议用户选择最新的 CPU 微架构，深度学习平台提供的 CPU 微架构按照新旧排序为：平台默认 -> Westmere -> SandyBridge -> IvyBridge -> Haswell -> Broadwell， 只有CPU微架构在SandyBridge及以上才可以使用优化版镜像，CPU 容器版镜像（含优化版镜像）与 CPU 微架构的适配情况见[CPU容器版镜像与CPU微架构适配表](https://docs.qingcloud.com/product/ai/deeplearning/#CPU%E5%AE%B9%E5%99%A8%E7%89%88%E9%95%9C%E5%83%8F%E4%B8%8ECPU%E5%BE%AE%E6%9E%B6%E6%9E%84%E9%80%82%E9%85%8D%E8%A1%A8)</span>
 
 ### 第6步：网络设置
 
@@ -976,12 +987,14 @@ CPU      | 3.6 | 1.8.0 | [https://appcenter-deeplearning.sh1a.qingstor.com/tenso
 CPU      | 2.7 | 1.9.0 | [https://appcenter-deeplearning.sh1a.qingstor.com/tensorflow/1.9.0/cpu/tensorflow-1.9.0-cp27-cp27mu-linux_x86_64.whl](https://appcenter-deeplearning.sh1a.qingstor.com/tensorflow/1.9.0/cpu/tensorflow-1.9.0-cp27-cp27mu-linux_x86_64.whl)
 CPU      | 3.6 | 1.9.0 | [https://appcenter-deeplearning.sh1a.qingstor.com/tensorflow/1.9.0/cpu/tensorflow-1.9.0-cp36-cp36m-linux_x86_64.whl](https://appcenter-deeplearning.sh1a.qingstor.com/tensorflow/1.9.0/cpu/tensorflow-1.9.0-cp36-cp36m-linux_x86_64.whl)
 
-### Docker镜像获取命令
+### docker镜像获取命令
 
-|App版本	|python版本	|cuda版本	|image获取命令	|
+|框架版本	|Python版本	|CUDA版本	|image获取命令	|
 | :-------- | :--------:| :--: | :--|
 |deeplearning1.0|2.7|9.1|docker pull qingcloud/deeplearning:1.0-py27-cu91-cudnn7.1|
 |deeplearning1.0|2.7|-|docker pull qingcloud/deeplearning:1.0-py27-cpu|
+|deeplearning1.0|2.7|-|docker pull qingcloud/deeplearning:1.0-py27-cpu-avx|
+|deeplearning1.0|2.7|-|docker pull qingcloud/deeplearning:1.0-py27-cpu-avx2-mkldnn|
 |caffe1.0|3.6|-|docker pull qingcloud/caffe:1.0-bvlc-py36-cpu|
 |caffe1.0|2.7|-|docker pull qingcloud/caffe:1.0-bvlc-py27-cpu|
 |caffe1.0|3.6|9.1|docker pull qingcloud/caffe:1.0-bvlc-py36-cu91-cudnn7.1|
@@ -1015,6 +1028,18 @@ CPU      | 3.6 | 1.9.0 | [https://appcenter-deeplearning.sh1a.qingstor.com/tenso
 |tensorflow1.6|3.6|-|docker pull qingcloud/tensorflow:1.6-py36-cpu|
 |tensorflow1.6|2.7|-|docker pull qingcloud/tensorflow:1.6-py27-cpu|
 
+### CPU容器版镜像与CPU微架构适配表
+
+| Intel CPU 微架构 |AVX2 和 MKLDNN 优化版| AVX 优化版 | 无优化版|
+|:---|:---:|:---:|:---:|
+|平台默认|不支持|不支持|支持|
+|Westmere|不支持|不支持|支持|
+|SandyBridge|不支持|支持|支持|
+|IvyBridge|不支持|支持|支持|
+|Haswell|支持|支持|支持|
+|Broadwell|支持|支持|支持|
+
+
 ## 版本历史
 
 ### v1.1
@@ -1025,6 +1050,7 @@ CPU      | 3.6 | 1.9.0 | [https://appcenter-deeplearning.sh1a.qingstor.com/tenso
 ### v1.2
 
 - 更新深度学习框架版本，预装 TensorFlow 1.8.0 并提供多版本wheel安装包，预装Caffe 1.0 github当前最新版，Keras 2.2.0
-- 增加GPU监控，随时掌握GPU使用状况
-- 发布深度学习容器版，容器版宿主机中均预装包含TensorFlow、Keras、Pytorch、Caffe框架的镜像
-- 提供适用于青云云平台多个Docker镜像，镜像区分Python版本(2.7和3.6)、Cuda版本(8.0和9.1)、框架版本
+- 增加 GPU 监控，随时掌握 GPU 使用状况
+- 发布深度学习容器版，容器版宿主机中均预装包含 TensorFlow, Keras, Pytorch, Caffe 框架的镜像
+- 提供适用于青云云平台多个docker镜像，镜像区分Python版本(2.7和3.6)、CUDA 版本(8.0和9.1)、框架版本
+- 提供 Intel CPU 优化版镜像，加速 TensorFlow, Keras, Pytorch, Caffe 训练过程，使用 Intel CPU 便可满足一些轻量级模型的训练和推理需求
