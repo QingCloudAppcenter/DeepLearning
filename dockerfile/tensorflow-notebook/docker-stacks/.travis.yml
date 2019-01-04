@@ -1,0 +1,12 @@
+language: python
+python:
+    - 3.6
+sudo: required
+services:
+    - docker
+install:
+    - make dev-env
+script:
+    - set -e
+    - make test/docs docs
+    - make build-test-all DARGS="--build-arg TEST_ONLY_BUILD=1"
