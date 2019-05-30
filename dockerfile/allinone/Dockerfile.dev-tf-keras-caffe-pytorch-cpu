@@ -57,6 +57,8 @@ RUN pip --no-cache-dir install \
     keras \
     Cython \
     python-dateutil \
+    torch \
+    torchvision \
     && \
     python -m ipykernel.kernelspec
 
@@ -96,6 +98,8 @@ RUN pip3 --no-cache-dir install \
     keras \
     Cython \
     python-dateutil \
+    torch \
+    torchvision \
     && \
     python3.6 -m ipykernel.kernelspec
 
@@ -108,75 +112,53 @@ RUN ipython kernel install --name python3 && \
 # Install caffe for python 2.7
 RUN mkdir -p /root/.config/matplotlib && echo "backend: Agg" > /root/.config/matplotlib/matplotlibrc
 
-RUN git clone --depth 10 --branch 3.4.1 https://github.com/opencv/opencv ~/opencv && \
-    mkdir -p ~/opencv/build && cd ~/opencv/build && \
-    cmake -D CMAKE_BUILD_TYPE=RELEASE \
-          -D CMAKE_INSTALL_PREFIX=/usr/local \
-          -D WITH_IPP=OFF \
-          -D WITH_CUDA=OFF \
-          -D WITH_OPENCL=OFF \
-          -D BUILD_TESTS=OFF \
-          -D BUILD_PERF_TESTS=OFF \
-          .. && \
-    make -j"$(nproc)" install
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libhdf5-serial-dev \
+    libopencv-dev
 
-RUN git clone --depth 10 https://github.com/BVLC/caffe ~/caffe-py2 && \
-    cp ~/caffe-py2/Makefile.config.example ~/caffe-py2/Makefile.config && \
-    sed -i 's/# CPU_ONLY/CPU_ONLY/g' ~/caffe-py2/Makefile.config && \
-    sed -i 's/# WITH_PYTHON_LAYER/WITH_PYTHON_LAYER/g' ~/caffe-py2/Makefile.config && \
-    sed -i 's/# OPENCV_VERSION/OPENCV_VERSION/g' ~/caffe-py2/Makefile.config && \
-    sed -i 's/\/usr\/lib\/python/\/usr\/local\/lib\/python/g' ~/caffe-py2/Makefile.config && \
-    sed -i 's/\/usr\/local\/include/\/usr\/local\/include \/usr\/include\/hdf5\/serial/g' ~/caffe-py2/Makefile.config && \
-    sed -i 's/hdf5/hdf5_serial/g' ~/caffe-py2/Makefile && \
-    cd ~/caffe-py2 && \
-    make -j"$(nproc)" -Wno-deprecated-gpu-targets distribute && \
-    # fix ValueError caused by python-dateutil 1.x
-    sed -i 's/,<2//g' ~/caffe-py2/python/requirements.txt && \
-    # for python3 remove below line
-    sed -i 's/ipython>=3.0.0/ipython>=3.0.0,<6/g' ~/caffe-py2/python/requirements.txt && \
-    pip install -r ~/caffe-py2/python/requirements.txt && \
-    cd ~/caffe-py2/distribute/bin && \
-    for file in *.bin; do mv "$file" "${file%%.bin}"; done && \
-    cd ~/caffe-py2/distribute && \
-    cp -r bin include lib proto /usr/local/ && \
+RUN git clone --depth 10 https://github.com/QingCloudAppcenter/DeepLearning.git && \
+    cp -r DeepLearning/caffe/cpu/caffe-py2 /opt/caffe-py2 && \
+    rm -rf ~/DeepLearning && \
+    cd /opt/caffe-py2 && \
+    find . -name '*.sh' | xargs chmod 775
+
+RUN cd /opt/caffe-py2 && \
+    for req in $(cat python/requirements.txt) pydot; do pip install $req; done && \
+    cd /opt/caffe-py2 && \
+    sed -i 's/usr\/lib\/python2.7\/dist-packages/usr\/local\/lib\/python2.7\/dist-packages/g' /opt/caffe-py2/Makefile.config.example && \
+    scripts/prepare_env.sh && \
+    scripts/build_intelcaffe.sh --compiler gcc && \
     cp -r python/caffe /usr/local/lib/python2.7/dist-packages/ && \
-    ldconfig && \
+    echo "/opt/caffe-py2/.build_release/lib/" >> /etc/ld.so.conf.d/caffe.conf && echo "/opt/caffe-py2/external/mlsl/l_mlsl_2018.0.003/intel64/lib/" >> /etc/ld.so.conf.d/caffe.conf && ldconfig && \
     apt-get clean && \
     apt-get autoremove && \
     rm -rf /var/lib/apt/lists/* /tmp/* /etc/apt/sources.list.d/*
 
 # Install caffe for python 3.6
-RUN git clone --depth 10 https://github.com/BVLC/caffe ~/caffe-py3 && \
-    cp ~/caffe-py3/Makefile.config.example ~/caffe-py3/Makefile.config && \
-    sed -i 's/# CPU_ONLY/CPU_ONLY/g' ~/caffe-py3/Makefile.config && \
-    sed -i 's/# PYTHON_LIBRARIES/PYTHON_LIBRARIES/g' ~/caffe-py3/Makefile.config && \
-    sed -i 's/# WITH_PYTHON_LAYER/WITH_PYTHON_LAYER/g' ~/caffe-py3/Makefile.config && \
-    sed -i 's/# OPENCV_VERSION/OPENCV_VERSION/g' ~/caffe-py3/Makefile.config && \
-    sed -i 's/2\.7/3\.6/g' ~/caffe-py3/Makefile.config && \
-    sed -i 's/3\.5/3\.6/g' ~/caffe-py3/Makefile.config && \
-    sed -i 's/\/usr\/lib\/python/\/usr\/local\/lib\/python/g' ~/caffe-py3/Makefile.config && \
-    sed -i 's/\/usr\/local\/include/\/usr\/local\/include \/usr\/include\/hdf5\/serial/g' ~/caffe-py3/Makefile.config && \
-    sed -i 's/boost_python3/boost_python-py35/g' ~/caffe-py3/Makefile.config && \
-    cat ~/caffe-py3/Makefile.config && \
-    sed -i 's/hdf5/hdf5_serial/g' ~/caffe-py3/Makefile && \
-    cd ~/caffe-py3 && \
-    make -j"$(nproc)" -Wno-deprecated-gpu-targets distribute && \
-    # fix ValueError caused by python-dateutil 1.x
-    sed -i 's/,<2//g' ~/caffe-py3/python/requirements.txt && \
-    pip3 install -r ~/caffe-py3/python/requirements.txt && \
-    cd ~/caffe-py3/distribute/bin && \
-    for file in *.bin; do mv "$file" "${file%%.bin}"; done && \
-    cd ~/caffe-py3/distribute && \
-    cp -r bin include lib proto /usr/local/ && \
+RUN rm -rf ~/DeepLearning && \
+    cd ~ && \
+    git clone --depth 10 https://github.com/QingCloudAppcenter/DeepLearning.git && \
+    cp -r DeepLearning/caffe/cpu/caffe-py3 /opt/caffe-py3 && \
+    rm -rf ~/DeepLearning && \
+    cd /opt/caffe-py3 && \
+    find . -name '*.sh' | xargs chmod 775
+
+RUN cd /opt/caffe-py3 && \
+    for req in $(cat python/requirements.txt) pydot; do pip3 install $req; done && \
+    cd /opt/caffe-py3 && \
+    sed -i 's/usr\/lib\/python3.6\/site-packages/usr\/local\/lib\/python3.6\/dist-packages/g' /opt/caffe-py3/Makefile.config.example && \
+    scripts/prepare_env.sh && \
+    scripts/build_intelcaffe.sh --compiler gcc && \
     cp -r python/caffe /usr/local/lib/python3.6/dist-packages/ && \
-    ldconfig && \
+    pip3 install python-dateutil==2.8.0 && \
+    echo "/opt/caffe-py3/.build_release/lib/" >> /etc/ld.so.conf.d/caffe.conf && echo "/opt/caffe-py3/external/mlsl/l_mlsl_2018.0.003/intel64/lib/" >> /etc/ld.so.conf.d/caffe.conf && ldconfig && \
     apt-get clean && \
     apt-get autoremove && \
     rm -rf /var/lib/apt/lists/* /tmp/* /etc/apt/sources.list.d/*
 
-# Install tensorflow and pytorch
-RUN pip --no-cache-dir install https://appcenter-deeplearning.sh1a.qingstor.com/tensorflow/1.12.0/cpu/tensorflow-1.12.0-cp27-cp27mu-linux_x86_64.whl torch torchvision && \
-    pip3 --no-cache-dir install https://appcenter-deeplearning.sh1a.qingstor.com/tensorflow/1.12.0/cpu/tensorflow-1.12.0-cp36-cp36m-linux_x86_64.whl torch torchvision
+# Install tensorflow
+RUN pip --no-cache-dir install https://appcenter-deeplearning.sh1a.qingstor.com/tensorflow/1.12.0/cpu/tensorflow-1.12.0-cp27-cp27mu-linux_x86_64.whl && \
+    pip3 --no-cache-dir install https://appcenter-deeplearning.sh1a.qingstor.com/tensorflow/1.12.0/cpu/tensorflow-1.12.0-cp36-cp36m-linux_x86_64.whl
 
 
 EXPOSE 6006

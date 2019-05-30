@@ -57,6 +57,8 @@ RUN pip --no-cache-dir install \
     keras \
     Cython \
     python-dateutil \
+    torch \
+    torchvision \
     && \
     python -m ipykernel.kernelspec
 
@@ -96,6 +98,8 @@ RUN pip3 --no-cache-dir install \
     keras \
     Cython \
     python-dateutil \
+    torch \
+    torchvision \
     && \
     python3.6 -m ipykernel.kernelspec
 
@@ -152,9 +156,9 @@ RUN cd /opt/caffe-py3 && \
     apt-get autoremove && \
     rm -rf /var/lib/apt/lists/* /tmp/* /etc/apt/sources.list.d/*
 
-# Install tensorflow and pytorch
-RUN pip --no-cache-dir install https://appcenter-deeplearning.sh1a.qingstor.com/tensorflow/1.12.0/avx2/tensorflow-1.12.0-cp27-cp27mu-linux_x86_64.whl torch torchvision && \
-    pip3 --no-cache-dir install https://appcenter-deeplearning.sh1a.qingstor.com/tensorflow/1.12.0/avx2/tensorflow-1.12.0-cp36-cp36m-linux_x86_64.whl torch torchvision
+# Install tensorflow
+RUN pip --no-cache-dir install https://appcenter-deeplearning.sh1a.qingstor.com/tensorflow/1.12.0/avx2/tensorflow-1.12.0-cp27-cp27mu-linux_x86_64.whl && \
+    pip3 --no-cache-dir install https://appcenter-deeplearning.sh1a.qingstor.com/tensorflow/1.12.0/avx2/tensorflow-1.12.0-cp36-cp36m-linux_x86_64.whl
 
 
 EXPOSE 6006
