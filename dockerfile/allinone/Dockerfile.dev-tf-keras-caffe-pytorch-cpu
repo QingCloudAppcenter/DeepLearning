@@ -139,7 +139,7 @@ RUN git clone --depth 10 https://github.com/BVLC/caffe ~/caffe-py2 && \
     for file in *.bin; do mv "$file" "${file%%.bin}"; done && \
     cd ~/caffe-py2/distribute && \
     cp -r bin include lib proto /usr/local/ && \
-    cp -r python/caffe-py2 /usr/local/lib/python2.7/dist-packages/ && \
+    cp -r python/caffe /usr/local/lib/python2.7/dist-packages/ && \
     ldconfig && \
     apt-get clean && \
     apt-get autoremove && \
