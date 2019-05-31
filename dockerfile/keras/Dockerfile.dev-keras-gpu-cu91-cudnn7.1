@@ -1,0 +1,99 @@
+FROM nvidia/cuda:9.1-devel-ubuntu16.04
+LABEL maintainer "danma <danma@yunify.com>"
+
+RUN echo "deb https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1604/x86_64 /" > /etc/apt/sources.list.d/nvidia-ml.list
+
+ENV CUDNN_VERSION 7.1.3.16
+LABEL com.nvidia.cudnn.version="${CUDNN_VERSION}"
+
+# Pick up some dependencies and python 2.7
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    software-properties-common \
+    curl \
+    apt-utils \
+    python \
+    python-dev \
+    libcudnn7=$CUDNN_VERSION-1+cuda9.1 \
+    libcudnn7-dev=$CUDNN_VERSION-1+cuda9.1 \
+    && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN curl -O https://bootstrap.pypa.io/get-pip.py && \
+    python get-pip.py && \
+    rm get-pip.py
+
+RUN python -m pip --no-cache-dir install \
+    Pillow \
+    h5py \
+    ipykernel \
+    jupyter \
+    matplotlib \
+    numpy \
+    pandas \
+    scipy \
+    sklearn \
+    ipython \
+    Cython \
+    && \
+    python -m ipykernel.kernelspec
+
+# Install python 3.6
+RUN add-apt-repository ppa:jonathonf/python-3.6 && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends \
+    python3.6 \
+    python3.6-dev
+
+# Remove python 3.5 and link python3.6->python3
+RUN apt-get -y purge --auto-remove python3.5 && \
+    cd /usr/bin && \
+    ln -s python3.6 python3 && \
+    ln -s python3.6-config python3-config && \
+    ln -s python3.6m python3m && \
+    ln -s python3.6m-config python3m-config && \
+    ln -s x86_64-linux-gnu-python3.6-config x86_64-linux-gnu-python3-config && \
+    ln -s x86_64-linux-gnu-python3.6m-config x86_64-linux-gnu-python3m-config
+
+RUN curl -O https://bootstrap.pypa.io/get-pip.py && \
+    python3.6 get-pip.py && \
+    rm get-pip.py && \
+    cp /usr/local/bin/pip2 /usr/local/bin/pip
+
+RUN pip3 --no-cache-dir install \
+    Pillow \
+    h5py \
+    ipykernel \
+    jupyter \
+    matplotlib \
+    numpy \
+    pandas \
+    scipy \
+    sklearn \
+    ipython \
+    Cython \
+    && \
+    python3.6 -m ipykernel.kernelspec
+
+# Config Jupyter Notebook
+RUN ipython kernel install --name python3 && \
+    jupyter notebook --generate-config && \
+    echo "c.NotebookApp.ip = '*'" >> /root/.jupyter/jupyter_notebook_config.py && \
+    echo "c.NotebookApp.open_browser = False" >> /root/.jupyter/jupyter_notebook_config.py
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends dialog
+
+ENV LD_LIBRARY_PATH /usr/local/cuda/extras/CUPTI/lib64:$LD_LIBRARY_PATH
+
+# Install TensorFlow GPU version.
+RUN pip --no-cache-dir install https://appcenter-deeplearning.sh1a.qingstor.com/tensorflow/1.12.0/gpu/tensorflow-1.12.0-cp27-cp27mu-linux_x86_64.whl && \
+    pip3 --no-cache-dir install https://appcenter-deeplearning.sh1a.qingstor.com/tensorflow/1.12.0/gpu/tensorflow-1.12.0-cp36-cp36m-linux_x86_64.whl
+
+# Install Keras
+RUN pip --no-cache-dir install keras && \
+    pip3 --no-cache-dir install keras
+
+EXPOSE 6006
+EXPOSE 8888
+
+WORKDIR "/root/"
