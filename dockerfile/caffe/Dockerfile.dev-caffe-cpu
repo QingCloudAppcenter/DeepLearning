@@ -1,0 +1,157 @@
+FROM ubuntu:16.04
+LABEL maintainer "danma <danma@yunify.com>"
+
+# Pick up some dependencies and python 2.7
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    software-properties-common \
+    build-essential \
+    ca-certificates \
+    cmake \
+    wget \
+    git \
+    vim \
+    curl \
+    apt-utils \
+    rsync \
+    zlib1g-dev \
+    libhdf5-serial-dev \
+    libpng12-0 \
+    libpng12-dev \
+    libzmq3-dev \
+    libfreetype6 \
+    libfreetype6-dev \
+    pkg-config \
+    python \
+    python-dev \
+    unzip \
+    libboost-all-dev \
+    libatlas-base-dev \
+    libgflags-dev \
+    libgoogle-glog-dev \
+    libleveldb-dev \
+    liblmdb-dev \
+    libprotobuf-dev \
+    libsnappy-dev \
+    protobuf-compiler \
+    python-numpy \
+    && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN curl -O https://bootstrap.pypa.io/get-pip.py && \
+    python get-pip.py && \
+    rm get-pip.py
+
+RUN pip --no-cache-dir install \
+    Pillow \
+    h5py \
+    ipykernel \
+    jupyter \
+    matplotlib \
+    numpy \
+    pandas \
+    scipy \
+    sklearn \
+    ipython \
+    Cython \
+    python-dateutil \
+    && \
+    python -m ipykernel.kernelspec
+
+# Install python 3.6
+RUN add-apt-repository ppa:jonathonf/python-3.6 && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends \
+    python3.6 \
+    python3.6-dev
+
+# Remove python 3.5 and link python3.6->python3
+RUN apt-get -y purge --auto-remove python3.5 && \
+    cd /usr/bin && \
+    ln -s python3.6 python3 && \
+    ln -s python3.6-config python3-config && \
+    ln -s python3.6m python3m && \
+    ln -s python3.6m-config python3m-config && \
+    ln -s x86_64-linux-gnu-python3.6-config x86_64-linux-gnu-python3-config && \
+    ln -s x86_64-linux-gnu-python3.6m-config x86_64-linux-gnu-python3m-config
+
+RUN curl -O https://bootstrap.pypa.io/get-pip.py && \
+    python3.6 get-pip.py && \
+    rm get-pip.py && \
+    cp /usr/local/bin/pip2 /usr/local/bin/pip
+
+RUN pip3 --no-cache-dir install \
+    Pillow \
+    h5py \
+    ipykernel \
+    jupyter \
+    matplotlib \
+    numpy \
+    pandas \
+    scipy \
+    sklearn \
+    ipython \
+    Cython \
+    python-dateutil \
+    && \
+    python3.6 -m ipykernel.kernelspec
+
+# Config Jupyter Notebook
+RUN ipython kernel install --name python3 && \
+    jupyter notebook --generate-config && \
+    echo "c.NotebookApp.ip = '*'" >> /root/.jupyter/jupyter_notebook_config.py && \
+    echo "c.NotebookApp.open_browser = False" >> /root/.jupyter/jupyter_notebook_config.py
+
+# Install caffe for python 2.7
+RUN mkdir -p /root/.config/matplotlib && echo "backend: Agg" > /root/.config/matplotlib/matplotlibrc
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libhdf5-serial-dev \
+    libopencv-dev
+
+RUN git clone --depth 10 https://github.com/QingCloudAppcenter/DeepLearning.git && \
+    cp -r DeepLearning/caffe/cpu/caffe-py2 /opt/caffe-py2 && \
+    rm -rf ~/DeepLearning && \
+    cd /opt/caffe-py2 && \
+    find . -name '*.sh' | xargs chmod 775
+
+RUN cd /opt/caffe-py2 && \
+    for req in $(cat python/requirements.txt) pydot; do pip install $req; done && \
+    cd /opt/caffe-py2 && \
+    sed -i 's/usr\/lib\/python2.7\/dist-packages/usr\/local\/lib\/python2.7\/dist-packages/g' /opt/caffe-py2/Makefile.config.example && \
+    scripts/prepare_env.sh && \
+    scripts/build_intelcaffe.sh --compiler gcc && \
+    cp -r python/caffe /usr/local/lib/python2.7/dist-packages/ && \
+    echo "/opt/caffe-py2/.build_release/lib/" >> /etc/ld.so.conf.d/caffe.conf && echo "/opt/caffe-py2/external/mlsl/l_mlsl_2018.0.003/intel64/lib/" >> /etc/ld.so.conf.d/caffe.conf && ldconfig && \
+    apt-get clean && \
+    apt-get autoremove && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /etc/apt/sources.list.d/*
+
+# Install caffe for python 3.6
+RUN rm -rf ~/DeepLearning && \
+    cd ~ && \
+    git clone --depth 10 https://github.com/QingCloudAppcenter/DeepLearning.git && \
+    cp -r DeepLearning/caffe/cpu/caffe-py3 /opt/caffe-py3 && \
+    rm -rf ~/DeepLearning && \
+    cd /opt/caffe-py3 && \
+    find . -name '*.sh' | xargs chmod 775
+
+RUN cd /opt/caffe-py3 && \
+    for req in $(cat python/requirements.txt) pydot; do pip3 install $req; done && \
+    cd /opt/caffe-py3 && \
+    sed -i 's/usr\/lib\/python3.6\/site-packages/usr\/local\/lib\/python3.6\/dist-packages/g' /opt/caffe-py3/Makefile.config.example && \
+    scripts/prepare_env.sh && \
+    scripts/build_intelcaffe.sh --compiler gcc && \
+    cp -r python/caffe /usr/local/lib/python3.6/dist-packages/ && \
+    pip3 install python-dateutil==2.8.0 && \
+    echo "/opt/caffe-py3/.build_release/lib/" >> /etc/ld.so.conf.d/caffe.conf && echo "/opt/caffe-py3/external/mlsl/l_mlsl_2018.0.003/intel64/lib/" >> /etc/ld.so.conf.d/caffe.conf && ldconfig && \
+    apt-get clean && \
+    apt-get autoremove && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /etc/apt/sources.list.d/*
+
+
+EXPOSE 6006
+EXPOSE 8888
+
+WORKDIR "/root/"
