@@ -27,13 +27,17 @@ parser.add_argument('--seed', type=int, default=1, metavar='S',
                     help='random seed (default: 1)')
 parser.add_argument('--log-interval', type=int, default=10, metavar='N',
                     help='how many batches to wait before logging training status')
+parser.add_argument('--world_size', type=int, default=2, metavar='W',
+                    help='rank')
+parser.add_argument('--rank', type=int, default=0, metavar='R',
+                    help='rank')
 args = parser.parse_args()
 args.cuda = not args.no_cuda and torch.cuda.is_available()
 
 torch.manual_seed(args.seed)
 if args.cuda:
     torch.cuda.manual_seed(args.seed)
-dist.init_process_group(backend='gloo', init_method='tcp://224.66.41.62:23456', world_size=2)
+dist.init_process_group(backend='gloo', init_method='env://', world_size=args.world_size, rank=args.rank)
 
 train_datasets= datasets.MNIST('./data', train=True, download=True,transform=transforms.Compose([transforms.ToTensor(),transforms.Normalize((0.1307,), (0.3081,))]))
 train_loader = torch.utils.data.DataLoader(train_datasets,batch_size=args.batch_size, shuffle=True)
@@ -85,7 +89,7 @@ def train(epoch):
         if batch_idx % args.log_interval == 0:
             print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
                 epoch, batch_idx * len(data), len(train_loader.dataset),
-                100. * batch_idx / len(train_loader), loss.data[0]))
+                100. * batch_idx / len(train_loader), loss.data.item()))
 
 def test():
     model.eval()
@@ -96,7 +100,7 @@ def test():
             data, target = data.cuda(), target.cuda()
         data, target = Variable(data, volatile=True), Variable(target)
         output = model(data)
-        test_loss += F.nll_loss(output, target, size_average=False).data[0] # sum up batch loss
+        test_loss += F.nll_loss(output, target, size_average=False).data.item() # sum up batch loss
         pred = output.data.max(1, keepdim=True)[1] # get the index of the max log-probability
         correct += pred.eq(target.data.view_as(pred)).cpu().sum()
 

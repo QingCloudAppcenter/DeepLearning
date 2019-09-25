@@ -91,7 +91,7 @@ def train(epoch):
             start_time = time.time()
             print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f} {:.1f} ms'.format(
                 epoch, batch_idx * len(data), len(train_loader.dataset),
-                100. * batch_idx / len(train_loader), loss.data[0],
+                100. * batch_idx / len(train_loader), loss.data.item(),
                 1000 * elapsed_time))
 
 def test():
@@ -103,7 +103,7 @@ def test():
             data, target = data.cuda(), target.cuda()
         data, target = Variable(data, volatile=True), Variable(target)
         output = model(data)
-        test_loss += F.nll_loss(output, target, size_average=False).data[0] # sum up batch loss
+        test_loss += F.nll_loss(output, target, size_average=False).data.item() # sum up batch loss
         pred = output.data.max(1, keepdim=True)[1] # get the index of the max log-probability
         correct += pred.eq(target.data.view_as(pred)).cpu().sum()
 
