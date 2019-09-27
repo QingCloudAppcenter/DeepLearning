@@ -11,8 +11,24 @@ import pytest
 import time
 import tempfile
 import tensorflow as tf
-from keras.utils.test_utils import keras_test
 from keras.preprocessing.image import ImageDataGenerator
+
+import six
+
+def keras_test(func):
+    """Function wrapper to clean up after TensorFlow tests.
+    # Arguments
+        func: test function to clean up after.
+    # Returns
+        A function wrapping the input function.
+    """
+    @six.wraps(func)
+    def wrapper(*args, **kwargs):
+        output = func(*args, **kwargs)
+        if K.backend() == 'tensorflow' or K.backend() == 'cntk':
+            K.clear_session()
+        return output
+    return wrapper
 
 
 pytestmark = pytest.mark.skipif(K.backend() != 'tensorflow',
