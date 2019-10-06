@@ -67,21 +67,21 @@ Keras 是一个高层神经网络 API，由 Python 编写，通过调用其他�
 
 ### 第1步：进入 AppCenter，选择 Deep Learning on QingCloud 服务
 
-![Alt text](./images/DeepLearning/deploy_0_0.png)
+![Alt text](./deploy_0_0.png)
 
 ### 第2步：部署 Deep Learning 应用
 
-![Alt text](./images/DeepLearning/deploy_0_1.png)
+![Alt text](./deploy_0_1.png)
 
 ### 第3步：选择版本和部署区域
 
-![Alt text](./images/DeepLearning/deploy_0_2.png)
+![Alt text](./deploy_0_2.png)
 
 > 界面将依据选择的版本，自动提供能够部署的区域，各区域支持的GPU型号参考[深度学习版本、GPU型号和区域支持对应表](#gpu_support_table)。
 
 ### 第4步：基本设置
 
-![第4步：基本设置](./images/DeepLearning/basic_config.png)
+![第4步：基本设置](basic_config.png)
 
 - 填写服务名称和描述，选择系列和版本（系列和版本详见[深度学习版本、GPU型号和区域支持对应表](#gpu_support_table)）。
 
@@ -89,17 +89,17 @@ Keras 是一个高层神经网络 API，由 Python 编写，通过调用其他�
 
 - 填写节点配置、节点类型、节点个数、数据盘大小、磁盘类型等配置信息。
 
-![第5步：节点设置](./images/DeepLearning/node_config.png)
+![第5步：节点设置](node_config.png)
 
 ### 第6步：网络设置
 
-![第6步：网络设置](./images/DeepLearning/network_config.png)
+![第6步：网络设置](network_config.png)
 
 - 出于安全考虑，所有的集群都需要部署在私有网络中，选择自己创建的已连接路由器的私有网络中。
 
 ### 第7步：环境设置
 
-![第7步：环境设置](./images/DeepLearning/env_config.png)
+![第7步：环境设置](env_config.png)
 
 - Deep Learning app 与 QingStor 命令行工具集成，[配置 QingStor](https://docs.qingcloud.com/qingstor/developer_tools/qsctl.html) 相关参数，可以方便的从 QingStor 拉取数据。
 
@@ -109,12 +109,12 @@ Keras 是一个高层神经网络 API，由 Python 编写，通过调用其他�
 
 - 运行状态
 
-![Alt text](./images/DeepLearning/cluster_status.png)
+![Alt text](./cluster_status.png)
 
 
 - GPU的监控
 
-![Alt text](./images/DeepLearning/cluster_status_gpu0.png)
+![Alt text](./cluster_status_gpu0.png)
 
 ### 第9步：登录主机
 
@@ -193,10 +193,10 @@ cd /opt/caffe-py3
 ```
 
 Caffe 训练过程
-![Caffe 训练过程](./images/DeepLearning/caffe_start.png)
+![Caffe 训练过程](caffe_start.png)
 
 Caffe 训练结果
-![Caffe 训练结果](./images/DeepLearning/caffe_result.png)
+![Caffe 训练结果](caffe_result.png)
 
 PyCaffe 单机示例：
 
@@ -205,10 +205,10 @@ cd /home/ubuntu/test/pycaffe
 python mnist.py
 ```
 PyCaffe 训练过程
-![PyCaffe 训练过程](./images/DeepLearning/pycaffe_start.png)
+![PyCaffe 训练过程](pycaffe_start.png)
 
 PyCaffe 训练结果
-![PyCaffe 训练结果](./images/DeepLearning/pycaffe_result.png)
+![PyCaffe 训练结果](pycaffe_result.png)
 
 企业版查看 GPU 使用情况，可以使用如下命令：
 
@@ -217,7 +217,7 @@ nvidia-smi
 ```
 
 NVidia GPU 使用情况
-![NVidia GPU 使用情况](./images/DeepLearning/GPU_NVidia.png)
+![NVidia GPU 使用情况](GPU_NVidia.png)
 
 基础版查看 GPU 使用情况，可以使用如下命令：
 
@@ -226,7 +226,7 @@ NVidia GPU 使用情况
 ```
 
 AMD GPU 使用情况
-![AMD GPU 使用情况](./images/DeepLearning/GPU_AMD.png)
+![AMD GPU 使用情况](GPU_AMD.png)
 
 
 #### 单任务使用双 GPU
@@ -235,7 +235,7 @@ PyCaffe 目前不支持多 GPU 训练，多 GPU 训练只能通过 [Caffe的C/C+
 ```shell
 cd ~/caffe && build/tools/caffe train --solver=models/bvlc_alexnet/solver.prototxt --gpu=0,1
 ```
-![Alt text](./images/DeepLearning/multip-gpu-caffe.png)
+![Alt text](./multip-gpu-caffe.png)
 
 ### TensorFlow 使用指南
 
@@ -255,7 +255,7 @@ python mnist.py
 wget https://github.com/QingCloudAppcenter/DeepLearning/raw/master/examples/tensorflow_multi_gpu_test.py
 python tensorflow_multi_gpu_test.py
 ```
-![Alt text](./images/DeepLearning/multip-gpu-tf.png)
+![Alt text](./multip-gpu-tf.png)
 
 #### 多任务共享单 GPU
 单 GPU 多任务共享方式，一般适用于 GPU 和显存需求不高的场景，同时启动多个容器分别运行一个任务，通过指定显存占用量的方式，实现多个任务共享 GPU 和显存。
@@ -276,19 +276,19 @@ sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
 ```shell
 CUDA_VISIBLE_DEVICES=0 python mnist.py
 ```
-![Alt text](./images/DeepLearning/use_gpu0.png)
+![Alt text](./use_gpu0.png)
 
 任务2运行在第二块 GPU 上（ GPU 编号为1）
 ```shell
 CUDA_VISIBLE_DEVICES=1 python mnist.py
 ```
-![Alt text](./images/DeepLearning/use_gpu1.png)
+![Alt text](./use_gpu1.png)
 
 
 #### 分布式
 增加节点，在线扩容：在详情页点击 `新增节点` 按钮，可以对每个新增节点指定 IP 或选择自动分配。
 TensorFlow 增加节点
-![TensorFlow 增加节点](./images/DeepLearning/add_node.png)
+![TensorFlow 增加节点](add_node.png)
 
 TensorFlow 分布式训练需要指定 parameter server 和 worker 的 IP 地址和端口号（根据自己的 IP 进行修改）
 
@@ -321,9 +321,9 @@ cd /home/ubuntu/test/tensorflow
 GRPC_POLL_STRATEGY=poll  python mnist_dist.py --ps_hosts=192.168.1.6:2221 --worker_hosts=192.168.1.6:2223,192.168.1.7:2223 --job_name=worker --task_index=1
 ```
 TensorFlow 分布式训练过程
-![TensorFlow 分布式训练过程](./images/DeepLearning/tensorflowdist_start.png)
+![TensorFlow 分布式训练过程](tensorflowdist_start.png)
 TensorFlow 分布式训练结果
-![TensorFlow 分布式训练结果](./images/DeepLearning/tensorflowdist_result.png)
+![TensorFlow 分布式训练结果](tensorflowdist_result.png)
 
 #### 开启 TensorBoard 服务
 
@@ -334,7 +334,7 @@ tensorboard --logdir=./tflog/
 ```
 
 TensorBoard 展示结果
-![TensorBoard 展示结果](./images/DeepLearning/tensorboard_graph.png)
+![TensorBoard 展示结果](tensorboard_graph.png)
 
 > 您可以通过如下方式之一查看 TensorBoard UI：
 > 1. 如需在 TensorBoard 中显示相关信息，需要编写相关代码。TensorBoard 详细用法请参考 [Github TensorBoard](https://github.com/tensorflow/tensorboard) 页面。
@@ -353,9 +353,9 @@ python mnist.py
 ```
 
 PyTorch 训练过程
-![PyTorch 训练过程](./images/DeepLearning/pytorch_start.png)
+![PyTorch 训练过程](pytorch_start.png)
 PyTorch 训练结果
-![PyTorch 训练结果](./images/DeepLearning/pytorch_result.png)
+![PyTorch 训练结果](pytorch_result.png)
 
 #### 单任务使用双 GPU
 
@@ -364,7 +364,7 @@ wget https://github.com/QingCloudAppcenter/DeepLearning/raw/master/examples/pyto
 python pytorch_multi_gpu_test.py
 ```
 
-![Alt text](./images/DeepLearning/multip-gpu-pytorch.png)
+![Alt text](./multip-gpu-pytorch.png)
 
 > 若出现类似错误：Unexpected end of /proc/mounts line *，是[NVIDIA 驱动的问题](https://devtalk.nvidia.com/default/topic/1027077/container-pytorch/-quot-unexpected-end-of-proc-mounts-line-overlay-quot-on-p3-8xlarge/)，对运行结果无影响。
 
@@ -385,9 +385,9 @@ GLOO_SOCKET_IFNAME=eth0 MASTER_ADDR=192.168.0.1 MASTER_PORT=23456 python mnist_d
 ```
 
 PyTorch 分布式训练过程
-![PyTorch 分布式训练过程](./images/DeepLearning/pytorchdist_start.png)
+![PyTorch 分布式训练过程](pytorchdist_start.png)
 PyTorch 分布式训练结果
-![PyTorch 分布式训练结果](./images/DeepLearning/pytorchdist_result.png)
+![PyTorch 分布式训练结果](pytorchdist_result.png)
 
 跨区分布式：青云深度学习平台支持跨区分布式 PyTorch 训练，首先使用 IPSec 或 GRE 方式，连通两个集群的路由器。参考[IPSec隧道](https://docs.qingcloud.com/product/network/ipsec)。如果是异地路由器，则要求两个路由器都有公网 IP 地址，并为公网 IP 分配足够的带宽，依据实际训练数据交互的带宽需求，调整带宽到合适的值。两个路由器连通之后，集群中的深度学习节点将会在不同的网段，例如 192.168.1.2 和 192.168.2.2，但是相互之间的连通性和在一个局域网没有差别。
 
@@ -421,9 +421,9 @@ python mnist.py
 ```
 
 Keras 训练过程
-![Keras 训练过程](./images/DeepLearning/keras_start.png)
+![Keras 训练过程](keras_start.png)
 Keras 训练结果
-![Keras 训练结果](./images/DeepLearning/keras_result.png)
+![Keras 训练结果](keras_result.png)
 
 为了方便开发，各版本环境中都配有 jupyter notebook，用户可以交互式编程，并能直观展现实时计算结果。
 
@@ -455,11 +455,11 @@ jupyter notebook 默认端口号为 `8888`，启动上述命令后会输出 toke
 > 如果需要通过公网访问这些信息您需要先申请一个公网 IP 绑定在路由器上，在路由器上设置端口转发，同时打开防火墙相应的下行端口。为了方便使用 jupyter notebook，也可参考[VPN 隧道指南](https://docs.qingcloud.com/product/network/vpn#vpn) 配置 VPN。
 
 jupyter notebook 开发环境浏览项目代码
-![jupyter notebook 开发环境浏览项目代码](./images/DeepLearning/jupyter_browse.png)
+![jupyter notebook 开发环境浏览项目代码](jupyter_browse.png)
 jupyter notebook 开发环境运行项目
-![jupyter notebook 开发环境运行项目](./images/DeepLearning/jupyter_train.png)
+![jupyter notebook 开发环境运行项目](jupyter_train.png)
 jupyter notebook 开发环境切换 Python 版本
-![jupyter notebook 开发环境切换Python版本](./images/DeepLearning/jupyter_python.png)
+![jupyter notebook 开发环境切换Python版本](jupyter_python.png)
 
 #### 单任务使用双 GPU 训练
 
@@ -468,7 +468,7 @@ wget https://github.com/QingCloudAppcenter/DeepLearning/raw/master/examples/kera
 pip install pytest six
 python keras_multi_gpu_test.py
 ```
-![Alt text](./images/DeepLearning/multip-gpu-keras.png)
+![Alt text](./multip-gpu-keras.png)
 
 ## 平台性能测试
 为了让用户快速了解深度学习平台的性能指标以便于选择，我们使用 TensorFlow [性能测试代码](https://github.com/tensorflow/benchmarks)中的 CNN Benchmark ，对常用硬件配置组合进行了测试。
@@ -638,11 +638,11 @@ python train.py
 
 Inception v1 训练过程
 
-![Inception v1 训练过程](./images/DeepLearning/inception_v1_train1.png)
+![Inception v1 训练过程](inception_v1_train1.png)
 
 Inception v1 训练结果
 
-![Inception v1 训练结果](./images/DeepLearning/inception_v1_train2.png)
+![Inception v1 训练结果](inception_v1_train2.png)
 
 使用刚才训练的权重对图片进行推理
 
@@ -655,7 +655,7 @@ python test.py picture/cat/cat1.jpg
 
 Inception v1 推理
 
-![Inception v1 推理](./images/DeepLearning/inception_v1_test.png)
+![Inception v1 推理](inception_v1_test.png)
 
 使用预训练权重对图片进行推理
 
@@ -679,7 +679,7 @@ python test_pretrained.py picture/cat/cat2.jpg
 
 Inception v1 使用预训练权重推理
 
-![Inception v1 使用预训练权重推理](./images/DeepLearning/inception_v1_test_pretrained.png)
+![Inception v1 使用预训练权重推理](inception_v1_test_pretrained.png)
 
 ### 目标检测
 FasterRCNN 目标检测
@@ -710,7 +710,7 @@ python train.py --load=/data/tensorpack/examples/FasterRCNN/train_log/bak/model-
 
 训练开始后，将显示训练进度并在每个 epoch 完成后保存一次 checkpoint（每次保存占用约500MB空间，长时间训练请关注硬盘空间），如下图所示
 
-![FasterRCNN训练](./images/DeepLearning/FasterRCNN_Train.png)
+![FasterRCNN训练](FasterRCNN_Train.png)
 
 FasterRCNN推理
 
@@ -728,7 +728,7 @@ jupyter notebook --ip=`ifconfig eth0 2>/dev/null|awk '/inet addr:/ {print $2}'|s
 
 在浏览器中打开 jupyter notebook 的页面，打开 test.ipynb 并运行，将显示初步训练的权重对测试图片的目标检测结果。如下图所示
 
-![FasterRCNN推理](./images/DeepLearning/FasterRCNN_Test.png)
+![FasterRCNN推理](FasterRCNN_Test.png)
 
 ### 人脸识别
 FaceNet 人脸相似度计算
@@ -749,13 +749,13 @@ jupyter notebook --ip=`ifconfig eth0 2>/dev/null|awk '/inet addr:/ {print $2}'|s
 
 在浏览器中打开 jupyter notebook 的页面，将看到如下内容
 
-![facenet 目录](./images/DeepLearning/facenet_1.png)
+![facenet 目录](facenet_1.png)
 
 打开 facecomp.ipynb 并运行，在提示输入 model file path 时，输入预训练权重路径 20180408-102900 ；提示输入需要计算的照片时，输入 a1.jpg a2.jpg b1.jpg b2.jpg c1.jpg c2.jpg 。(这里随机选择了 VGGFace2 数据集中3个人6张照片作为示例)
 
 将计算并显示6张人脸照片相互之间的距离，同一个人的照片，距离较近。如下图所示
 
-![facenet 运行](./images/DeepLearning/facenet_2.png)
+![facenet 运行](facenet_2.png)
 
 用户可以使用对象存储中的 VGGFace2 或者自己的数据集，来训练 FaceNet，获得适用于自己业务的模型。
 
@@ -795,7 +795,7 @@ cd kaldi_test
 ```
 
 测试语音识别效果如下图
-![kaldi](./images/DeepLearning/kaldi.png)
+![kaldi](kaldi.png)
 
 测试脚本说明：CVTE 预训练模型需要对特征(这里第一步选用的是 FBank 特征)进行 CMVN 预处理后，再送入 DNN + HMM 进行处理，才能得到较好的识别效果，所以这里的测试脚本有3步。如果要测试其他音频文件，修改 wav.scp 和 utt2spk 文件。封装其他服务请参考[Kaldi 开发文档](http://kaldi-asr.org/doc/index.html)，调用其 API 编写新的程序。
 
@@ -822,11 +822,11 @@ python3 model.py -e train -ic bert_model/bert_model.ckpt
 
 NVidia Tesla P100 训练速度如下
 
-![bert_nv](./images/DeepLearning/bert_nv.png)
+![bert_nv](bert_nv.png)
 
 AMD Radeon Pro Wx9100 训练速度如下
 
-![bert_amd](./images/DeepLearning/bert_amd.png)
+![bert_amd](bert_amd.png)
 
 Gensim 处理中文维基百科语料 Word2Vec
 
@@ -849,7 +849,7 @@ python train.py
 
 训练完成后，在 gensim 目录下，运行 jupyter notebook，浏览器打开并运行 test.ipynb，对训练结果进行测试(本示例也包含了预训练模型，可直接运行该测试)，测试效果如下图
 
-![gensim](./images/DeepLearning/gensim.png)
+![gensim](gensim.png)
 
 
 ## 常见问题 FAQ
@@ -868,7 +868,7 @@ sudo nvidia-docker run -it --rm -p host_port:8888 image_id /bin/bash
 	无需修改防火墙策略，在下图所示的 VPC 网络中[配置VPN服务](https://docs.qingcloud.com/product/network/vpn)，则可以轻松访问云端私有网络中的主机。
 	在浏览器中输入 host_ip:host_port 便可以访问
 
-![Alt text](./images/DeepLearning/vpn_vpc.png)
+![Alt text](./vpn_vpc.png)
 
 ### 2.为什么在 import tensorflow 的时候显示 no module named tensorflow？
 由于容器中可能存在多个版本的 Python(2.7, 3.5, 3.6)，若使用的当前镜像的名称类似 tensorflow1.8-py36-cu91-cudnn7.1，则表示 TensorFlow 安装在 Python 3.6 的包目录下，应该使用 Python 3.6 运行，总之，应根据镜像名字运行对相应版本的 Python 。新版本容器镜像同时安装有 Python 2.7 和 Python 3.6，分别使用 python/pip 和 python3/pip3 命令操作，使用和进行包配置时，请注意当前使用的 Python 版本。
@@ -894,14 +894,14 @@ sudo nvidia-docker run -it --rm -p host_port:8888 image_id /bin/bash
 import  tensorflow as tf
 sess = tf.InteractiveSession()
 ```
-![Alt text](./images/DeepLearning/gpu-tensorflow.png)
+![Alt text](./gpu-tensorflow.png)
 
 - 查看 Keras 是否可以正常使用 GPU
 ```shell
 from keras import backend as K
 K.tensorflow_backend._get_available_gpus()
 ```
-![Alt text](./images/DeepLearning/gpu-keras.png)
+![Alt text](./gpu-keras.png)
 
 - 查看 Caffe 是否可以正常使用 GPU
 ```shell
@@ -911,7 +911,7 @@ sh examples/mnist/create_mnist.sh
 sed -i "s/solver_mode: CPU/solver_mode: GPU/g" examples/mnist/lenet_solver.prototxt
 sh examples/mnist/train_lenet.sh
 ```
-![Alt text](./images/DeepLearning/gpu-caffe.png)
+![Alt text](./gpu-caffe.png)
 
 - 查看 PyTorch 是否可以正常使用 GPU
 ```shell
@@ -922,11 +922,11 @@ torch.cuda.device(0)
 torch.cuda.device_count()
 torch.cuda.get_device_name(0)
 ```
-![Alt text](./images/DeepLearning/gpu-pytorch.png)
+![Alt text](./gpu-pytorch.png)
 
 ### 6. 为什么 TensorBoard UI 加载失败？
 
-![Alt text](./images/DeepLearning/tensorboard_404.png)
+![Alt text](./tensorboard_404.png)
 
 > 更换浏览器，建议使用 Google 浏览器
 
