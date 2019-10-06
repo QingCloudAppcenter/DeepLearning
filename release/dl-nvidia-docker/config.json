@@ -19,7 +19,7 @@
                     "label":"Description",
                     "description":"The description of the deep learning service on Docker",
                     "type":"string",
-                    "default":"Deep learning container service with Caffe, TensorFlow, Keras and PyTorch support CPUs",
+                    "default":"Deep learning container service with Caffe, TensorFlow, Keras and PyTorch support both GPUs and CPUs",
                     "required":"no"
                 },
                 {
@@ -27,9 +27,9 @@
                     "label": "Resource Configuration",
                     "description": "The resource configuration of the service",
                     "type": "string",
-                    "default": "8C16G",
+                    "default": "16C64G1GPU",
                     "customizable": false,
-                    "range": ["8C16G", "8C32G", "16C32G", "16C64G", "32C64G", "32C128G"]
+                    "range": ["16C64G1GPU", "32C128G2GPU"]
                 },
                 {
                     "key":"vxnet",
@@ -62,13 +62,25 @@
                             "label":"CPU",
                             "description":"CPUs of each node",
                             "type":"integer",
-                            "default":8,
+                            "default":16,
                             "range":[
-                                8,
                                 16,
                                 32
                             ],
-                            "resource_group": [8, 8, 16, 16, 32, 32],
+                            "resource_group": [16, 32],
+                            "required":"no"
+                        },
+                        {
+                            "key":"gpu",
+                            "label":"GPU",
+                            "description":"GPUs of each node",
+                            "type":"integer",
+                            "default":1,
+                            "range":[
+                                1,
+                                2
+                            ],
+                            "resource_group": [1, 2],
                             "required":"no"
                         },
                         {
@@ -76,24 +88,21 @@
                             "label":"Memory",
                             "description":"memory of each node (in MiB)",
                             "type":"integer",
-                            "default":16384,
+                            "default":65536,
                             "range":[
-                                16384,
-                                32768,
                                 65536,
                                 131072
                             ],
-                            "resource_group": [16384, 32768, 32768, 65536, 65536, 131072],
+                            "resource_group": [65536, 131072],
                             "required":"no"
                         },
                         {
                             "key": "volume_class",
                             "label": "Volume Class",
-                            "description": "The volume type for each instance，such as high performance plus，capacity，NeonSAN",
+                            "description": "The volume type for each instance，such as capacity，NeonSAN",
                             "type": "integer",
-                            "default": 200,
+                            "default": 2,
                             "range": [
-                                200,
                                 2,
                                 5
                             ],
@@ -104,7 +113,7 @@
                             "label":"Volume Size",
                             "description":"The volume size for each node",
                             "type":"integer",
-                            "default":10,
+                            "default":100,
                             "step":10,
                             "required":"yes"
                         },
@@ -115,8 +124,8 @@
                             "type":"integer",
                             "default":1,
                             "step":1,
-                            "max": 50,
-                            "min": 1,
+                            "max": 8,
+				            "min": 1,
                             "required":"yes"
                         }
                     ]
