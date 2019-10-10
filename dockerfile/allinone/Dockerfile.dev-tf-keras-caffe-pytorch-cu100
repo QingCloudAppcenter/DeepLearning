@@ -1,0 +1,241 @@
+FROM nvidia/cuda:10.0-devel-ubuntu16.04
+LABEL maintainer "danma <danma@yunify.com>"
+
+RUN echo "deb https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1604/x86_64 /" > /etc/apt/sources.list.d/nvidia-ml.list
+
+ENV CUDNN_VERSION 7.6.2.24
+LABEL com.nvidia.cudnn.version="${CUDNN_VERSION}"
+
+# Pick up some dependencies and python 2.7
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    software-properties-common \
+    build-essential \
+    ca-certificates \
+    cmake \
+    wget \
+    git \
+    nano \
+    curl \
+    apt-utils \
+    rsync \
+    zlib1g-dev \
+    libhdf5-serial-dev \
+    libpng12-0 \
+    libpng12-dev \
+    libzmq3-dev \
+    libfreetype6 \
+    libfreetype6-dev \
+    pkg-config \
+    python \
+    python-dev \
+    unzip \
+    libcudnn7=$CUDNN_VERSION-1+cuda10.0 \
+    libcudnn7-dev=$CUDNN_VERSION-1+cuda10.0 \
+    libboost-all-dev \
+    libatlas-base-dev \
+    libgflags-dev \
+    libgoogle-glog-dev \
+    libleveldb-dev \
+    liblmdb-dev \
+    libprotobuf-dev \
+    libsnappy-dev \
+    protobuf-compiler \
+    && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN curl -O https://bootstrap.pypa.io/get-pip.py && \
+    python get-pip.py && \
+    rm get-pip.py
+
+RUN python -m pip --no-cache-dir install \
+    Pillow \
+    h5py \
+    ipykernel \
+    jupyter \
+    matplotlib \
+    numpy \
+    pandas \
+    scipy \
+    sklearn \
+    ipython \
+    Cython \
+    && \
+    python -m ipykernel.kernelspec
+
+# Install python 3.6
+RUN add-apt-repository ppa:jonathonf/python-3.6 && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends \
+    python3.6 \
+    python3.6-dev
+
+# Remove python 3.5 and link python3.6->python3
+RUN apt-get -y purge --auto-remove python3.5 && \
+    cd /usr/bin && \
+    ln -s python3.6 python3 && \
+    ln -s python3.6-config python3-config && \
+    ln -s python3.6m python3m && \
+    ln -s python3.6m-config python3m-config && \
+    ln -s x86_64-linux-gnu-python3.6-config x86_64-linux-gnu-python3-config && \
+    ln -s x86_64-linux-gnu-python3.6m-config x86_64-linux-gnu-python3m-config
+
+RUN curl -O https://bootstrap.pypa.io/get-pip.py && \
+    python3.6 get-pip.py && \
+    rm get-pip.py && \
+    cp /usr/local/bin/pip2 /usr/local/bin/pip
+
+RUN pip3 --no-cache-dir install \
+    Pillow \
+    h5py \
+    ipykernel \
+    jupyter \
+    matplotlib \
+    numpy \
+    pandas \
+    scipy \
+    sklearn \
+    ipython \
+    Cython \
+    && \
+    python3.6 -m ipykernel.kernelspec
+
+RUN echo "deb https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1604/x86_64 /" > /etc/apt/sources.list.d/nvidia-ml.list && \
+    APT_INSTALL="apt-get install -y --no-install-recommends" && \
+    PIP_INSTALL="python3.6 -m pip --no-cache-dir install --upgrade" && \
+    apt-get update && \
+    DEBIAN_FRONTEND=noninteractive $APT_INSTALL \
+    build-essential \
+    ca-certificates \
+    cmake \
+    wget \
+    git \
+    vim \
+    python \
+    python-dev \
+    python-numpy \
+    libcudnn7=$CUDNN_VERSION-1+cuda10.0 \
+    libcudnn7-dev=$CUDNN_VERSION-1+cuda10.0 \
+    libboost-all-dev \
+    libatlas-base-dev \
+    libgflags-dev \
+    libgoogle-glog-dev \
+    libhdf5-serial-dev \
+    libleveldb-dev \
+    liblmdb-dev \
+    libprotobuf-dev \
+    libsnappy-dev \
+    protobuf-compiler \
+    && \
+    $PIP_INSTALL \
+    setuptools \
+    numpy \
+    scipy \
+    pandas \
+    scikit-learn \
+    matplotlib \
+    Cython
+
+# Install opencv and nccl
+RUN git clone --depth 10 --branch 3.4.1 https://github.com/opencv/opencv ~/opencv && \
+    mkdir -p ~/opencv/build && cd ~/opencv/build && \
+    cmake -D CMAKE_BUILD_TYPE=RELEASE \
+          -D CMAKE_INSTALL_PREFIX=/usr/local \
+          -D WITH_IPP=OFF \
+          -D WITH_CUDA=OFF \
+          -D WITH_OPENCL=OFF \
+          -D BUILD_TESTS=OFF \
+          -D BUILD_PERF_TESTS=OFF \
+          .. && \
+    make -j"$(nproc)" install && \
+    git clone --depth 10 https://github.com/NVIDIA/nccl ~/nccl && \
+    cd ~/nccl && \
+    make -j"$(nproc)" install
+
+# Install caffe for python 2.7
+RUN git clone --depth 10 https://github.com/BVLC/caffe ~/caffe-py2 && \
+    cp ~/caffe-py2/Makefile.config.example ~/caffe-py2/Makefile.config && \
+    sed -i 's/# USE_CUDNN/USE_CUDNN/g' ~/caffe-py2/Makefile.config && \
+    sed -i 's/# WITH_PYTHON_LAYER/WITH_PYTHON_LAYER/g' ~/caffe-py2/Makefile.config && \
+    sed -i 's/# OPENCV_VERSION/OPENCV_VERSION/g' ~/caffe-py2/Makefile.config && \
+    sed -i 's/# USE_NCCL/USE_NCCL/g' ~/caffe-py2/Makefile.config && \
+    sed -i 's/-gencode arch=compute_20,code=sm_20//g' ~/caffe-py2/Makefile.config && \
+    sed -i 's/-gencode arch=compute_20,code=sm_21//g' ~/caffe-py2/Makefile.config && \
+    sed -i 's/\/usr\/lib\/python/\/usr\/local\/lib\/python/g' ~/caffe-py2/Makefile.config && \
+    sed -i 's/\/usr\/local\/include/\/usr\/local\/include \/usr\/include\/hdf5\/serial/g' ~/caffe-py2/Makefile.config && \
+    sed -i 's/hdf5/hdf5_serial/g' ~/caffe-py2/Makefile && \
+    cd ~/caffe-py2 && \
+    make -j"$(nproc)" -Wno-deprecated-gpu-targets distribute && \
+    # fix ValueError caused by python-dateutil 1.x
+    sed -i 's/,<2//g' ~/caffe-py2/python/requirements.txt && \
+    # for python3 remove below line
+    sed -i 's/ipython>=3.0.0/ipython>=3.0.0,<6/g' ~/caffe-py2/python/requirements.txt && \
+    pip install -r ~/caffe-py2/python/requirements.txt && \
+    cd ~/caffe-py2/distribute/bin && \
+    for file in *.bin; do mv "$file" "${file%%.bin}"; done && \
+    cd ~/caffe-py2/distribute && \
+    cp -r bin include lib proto /usr/local/ && \
+    cp -r python/caffe /usr/local/lib/python2.7/dist-packages/ && \
+    ldconfig && \
+    apt-get clean && \
+    apt-get autoremove && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /etc/apt/sources.list.d/*
+
+# Install caffe for python 3.6
+RUN git clone --depth 10 https://github.com/BVLC/caffe ~/caffe-py3 && \
+    cp ~/caffe-py3/Makefile.config.example ~/caffe-py3/Makefile.config && \
+    sed -i 's/# USE_CUDNN/USE_CUDNN/g' ~/caffe-py3/Makefile.config && \
+    sed -i 's/# PYTHON_LIBRARIES/PYTHON_LIBRARIES/g' ~/caffe-py3/Makefile.config && \
+    sed -i 's/# WITH_PYTHON_LAYER/WITH_PYTHON_LAYER/g' ~/caffe-py3/Makefile.config && \
+    sed -i 's/# OPENCV_VERSION/OPENCV_VERSION/g' ~/caffe-py3/Makefile.config && \
+    sed -i 's/# USE_NCCL/USE_NCCL/g' ~/caffe-py3/Makefile.config && \
+    sed -i 's/-gencode arch=compute_20,code=sm_20//g' ~/caffe-py3/Makefile.config && \
+    sed -i 's/-gencode arch=compute_20,code=sm_21//g' ~/caffe-py3/Makefile.config && \
+    sed -i 's/2\.7/3\.6/g' ~/caffe-py3/Makefile.config && \
+    sed -i 's/3\.5/3\.6/g' ~/caffe-py3/Makefile.config && \
+    sed -i 's/\/usr\/lib\/python/\/usr\/local\/lib\/python/g' ~/caffe-py3/Makefile.config && \
+    sed -i 's/\/usr\/local\/include/\/usr\/local\/include \/usr\/include\/hdf5\/serial/g' ~/caffe-py3/Makefile.config && \
+    sed -i 's/hdf5/hdf5_serial/g' ~/caffe-py3/Makefile && \
+    sed -i 's/boost_python3/boost_python-py35/g' ~/caffe-py3/Makefile.config && \
+    cat ~/caffe-py3/Makefile.config && \
+    cd ~/caffe-py3 && \
+    make -j"$(nproc)" -Wno-deprecated-gpu-targets distribute && \
+    # fix ValueError caused by python-dateutil 1.x
+    sed -i 's/,<2//g' ~/caffe-py3/python/requirements.txt && \
+    python3.6 -m pip --no-cache-dir install --upgrade -r ~/caffe-py3/python/requirements.txt && \
+    cd ~/caffe-py3/distribute/bin && \
+    for file in *.bin; do mv "$file" "${file%%.bin}"; done && \
+    cd ~/caffe-py3/distribute && \
+    cp -r bin include lib proto /usr/local/ && \
+    cp -r python/caffe /usr/local/lib/python3.6/dist-packages/ && \
+    ldconfig && \
+    apt-get clean && \
+    apt-get autoremove && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /etc/apt/sources.list.d/*
+
+# Config Jupyter Notebook
+RUN ipython kernel install --name python3 && \
+    jupyter notebook --generate-config && \
+    echo "c.NotebookApp.ip = '*'" >> /root/.jupyter/jupyter_notebook_config.py && \
+    echo "c.NotebookApp.open_browser = False" >> /root/.jupyter/jupyter_notebook_config.py
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends dialog
+
+# Install TensorFlow GPU version.
+RUN pip3 --no-cache-dir install https://appcenter-deeplearning.sh1a.qingstor.com/tensorflow/1.14.0/gpu/tensorflow_gpu-1.14.0-cp36-cp36m-manylinux1_x86_64.whl && \
+    pip --no-cache-dir install https://appcenter-deeplearning.sh1a.qingstor.com/tensorflow/1.14.0/gpu/tensorflow_gpu-1.14.0-cp27-cp27mu-manylinux1_x86_64.whl
+
+# Install PyTorch.
+RUN pip3 --no-cache-dir install torch==1.2.0 torchvision==0.4.0 && \
+    pip --no-cache-dir install torch==1.2.0 torchvision==0.4.0
+
+# Install Keras.
+RUN pip3 --no-cache-dir install keras==2.3.1 && \
+    pip --no-cache-dir install keras==2.3.1
+
+ENV LD_LIBRARY_PATH /usr/local/cuda/extras/CUPTI/lib64:$LD_LIBRARY_PATH
+
+EXPOSE 6006
+EXPOSE 8888
+
+WORKDIR "/root/"
